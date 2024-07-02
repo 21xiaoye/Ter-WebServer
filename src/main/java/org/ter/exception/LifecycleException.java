@@ -1,4 +1,4 @@
-package org.ter.catalina.exception;
+package org.ter.exception;
 
 public class LifecycleException extends Exception{
     private static final long serialVersionUID = 1L;

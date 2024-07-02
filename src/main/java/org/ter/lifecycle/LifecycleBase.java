@@ -1,6 +1,6 @@
-package org.ter.catalina.lifecycle;
+package org.ter.lifecycle;
 
-import org.ter.catalina.exception.LifecycleException;
+import org.ter.exception.LifecycleException;
 import org.ter.ter_server.util.res.StringManager;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public abstract class LifecycleBase implements Lifecycle{
      */
     private volatile LifecycleState state = LifecycleState.NEW;
     /**
-     * 子类抛出的{@link org.ter.catalina.exception.LifecycleException} 异常，
+     * 子类抛出的{@link LifecycleException} 异常，
      * true 继续抛出，供调用方处理
      * false 记录异常
      */
@@ -58,7 +58,7 @@ public abstract class LifecycleBase implements Lifecycle{
         }
     }
     @Override
-    public void init() throws LifecycleException {
+    public final synchronized void init() throws LifecycleException {
         if(!LifecycleState.NEW.equals(state)){
             invalidTransition(BEFORE_INIT_EVENT);
         }
@@ -72,7 +72,7 @@ public abstract class LifecycleBase implements Lifecycle{
     }
     protected abstract void initInternal() throws LifecycleException;
     @Override
-    public void start() throws LifecycleException {
+    public final synchronized void start() throws LifecycleException {
         if(LifecycleState.STARTING_PREP.equals(state)
                 || LifecycleState.STARTING.equals(state)
                 || LifecycleState.STARTED.equals(state)){
@@ -102,7 +102,7 @@ public abstract class LifecycleBase implements Lifecycle{
     }
     protected abstract void startInternal() throws LifecycleException;
     @Override
-    public void stop() throws LifecycleException {
+    public final synchronized void stop() throws LifecycleException {
         if(LifecycleState.STOPPING_PREP.equals(state)
                 || LifecycleState.STOPPING.equals(state)
                 || LifecycleState.STOPPED.equals(state)){
@@ -127,7 +127,7 @@ public abstract class LifecycleBase implements Lifecycle{
                     && !LifecycleState.FAILED.equals(state)){
                 invalidTransition(AFTER_STOP_EVENT);
             }
-            setStateInternal(LifecycleState.STOPPED, null, false);
+            setStateInternal(LifecycleState.STOPPED, null,false);
         }catch (Throwable throwable){
             handleSubClassException(throwable, "lifecycleBase", toString());
         }finally {
@@ -141,17 +141,18 @@ public abstract class LifecycleBase implements Lifecycle{
     protected abstract void stopInternal() throws LifecycleException;
 
     @Override
-    public void destroy() throws LifecycleException {
+    public final synchronized void destroy() throws LifecycleException {
+        if(LifecycleState.DESTROYING.equals(state)
+                || LifecycleState.DESTROYED.equals(state)){
+            return;
+        }
+
         if(LifecycleState.FAILED.equals(state)) {
             try {
                 stop();
             }catch (LifecycleException exception){
                 // 记录日志
             }
-        }
-        if(LifecycleState.DESTROYING.equals(state)
-                || LifecycleState.DESTROYED.equals(state)){
-            return;
         }
         if(!LifecycleState.STOPPED.equals(state)
                 && !LifecycleState.FAILED.equals(state)

@@ -1,4 +1,4 @@
-package org.ter.catalina.lifecycle;
+package org.ter.lifecycle;
 
 public enum LifecycleState {
     NEW(false, null),

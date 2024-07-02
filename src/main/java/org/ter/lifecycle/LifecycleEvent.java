@@ -1,7 +1,6 @@
-package org.ter.catalina.lifecycle;
+package org.ter.lifecycle;
 
 import java.util.EventObject;
-import java.util.Objects;
 
 public final class LifecycleEvent extends EventObject {
     private static final long serialVersionUID = 1L;

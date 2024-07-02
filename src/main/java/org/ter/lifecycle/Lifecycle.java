@@ -1,6 +1,6 @@
-package org.ter.catalina.lifecycle;
+package org.ter.lifecycle;
 
-import org.ter.catalina.exception.LifecycleException;
+import org.ter.exception.LifecycleException;
 
 public interface Lifecycle extends SingleUse{
     String BEFORE_INIT_EVENT = "before_init";

@@ -1,4 +1,4 @@
-package org.ter.catalina.startup;
+package org.ter.startup;
 
 import org.ter.ter_server.util.res.StringManager;
 
