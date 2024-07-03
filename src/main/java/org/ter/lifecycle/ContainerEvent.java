@@ -1,7 +1,6 @@
 package org.ter.lifecycle;
 
 import org.ter.container.Container;
-
 import java.util.EventObject;
 
 public class ContainerEvent extends EventObject {
