@@ -171,12 +171,14 @@ public abstract class LifecycleBase implements Lifecycle{
     protected abstract void destroyInternal() throws LifecycleException;
     @Override
     public String getStateName() {
-        return getState().toString();
+        return getLifecycleState().toString();
     }
-    public LifecycleState getState() {
+
+    @Override
+    public LifecycleState getLifecycleState() {
         return state;
     }
-    protected synchronized void setState(LifecycleState state) throws LifecycleException{
+    protected synchronized void setLifecycleState(LifecycleState state) throws LifecycleException{
         setStateInternal(state, null,true);
     }
     protected synchronized void setState(LifecycleState state, Object data)

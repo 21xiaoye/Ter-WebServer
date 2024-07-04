@@ -5,9 +5,25 @@ import org.ter.lifecycle.Lifecycle;
 
 import java.beans.PropertyChangeListener;
 public interface Container extends Lifecycle {
+    /**
+     * 添加子容器时发送 addChild()的
+     * ContainerEvent 事件类型
+     */
     String ADD_CHILD_EVENT = "addChild";
+    /**
+     * 添加阀门 addValve()时发送的
+     * ContainerEvent事件类型，如果此容器支持管道。
+     */
     String ADD_VALVE_EVENT = "addValue";
+    /**
+     * 删除子容器时发送 removeChild()的
+     * ContainerEvent 事件类型
+     */
     String REMOVE_CHILD_EVENT = "removeChild";
+    /**
+     * 删除阀门 removeValve()时发送的
+     * ContainerEvent事件类型，如果此容器支持管道。
+     */
     String REMOVE_VALUE_EVENt = "removeValue";
 
     /**
@@ -79,7 +95,6 @@ public interface Container extends Lifecycle {
      * @param name  子容器的名称
      * @return  返回给定名称的子容器
      */
-
     Container findChild(String name);
 
     /**
