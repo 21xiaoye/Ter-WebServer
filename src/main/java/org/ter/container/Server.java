@@ -1,6 +1,7 @@
 package org.ter.container;
 
 import org.ter.lifecycle.Lifecycle;
+import org.ter.startup.Catalina;
 
 /**
  * 元素 Server 表示整个 Catalina servlet 容器。
@@ -79,25 +80,28 @@ public interface Server extends Lifecycle {
     void await();
 
     /**
-     * 根据名称查找服务
+     * 查找本服务器上的服务
      *
-     * @param name  服务名称
-     * @return  返回根据名称查找的服务
+     * @return  返回查找的服务
      */
-    Service findService(String name);
-
-    /**
-     * 返回服务集合
-     *
-     * @return  返回此服务器的服务集
-     */
-    Service[] findService();
+    Service findService();
 
     /**
      * 删除此服务器上相关联的服务
-     *
-     * @param service   需要删除的服务
      */
-    void removeService(Service service);
+    void removeService();
 
+    /**
+     * 返回外部 Catalina 启动/关机组件（如果存在）。
+     *
+     * @return 返回外部 Catalina
+     */
+    Catalina getCatalina();
+
+    /**
+     * 设置外部 Catalina
+     *
+     * @param catalina 新的Catalina
+     */
+    void setCatalina(Catalina catalina);
 }

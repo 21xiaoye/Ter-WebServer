@@ -26,12 +26,13 @@ public class MapperListener extends LifecycleBase implements ContainerListener, 
 
     @Override
     protected void initInternal() throws LifecycleException {
-
+        System.out.println("初始化映射器......");
     }
 
     @Override
     protected void startInternal() throws LifecycleException {
-        setState(LifecycleState.STARTING);
+        System.out.println("启动映射器......");
+        setLifecycleState(LifecycleState.STARTING);
         Engine engine = service.getContainer();
         if(Objects.isNull(engine)){
             return;

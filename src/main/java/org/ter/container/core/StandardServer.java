@@ -4,15 +4,13 @@ import org.ter.container.Server;
 import org.ter.container.Service;
 import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.LifecycleBase;
+import org.ter.lifecycle.LifecycleState;
 import org.ter.startup.Catalina;
 
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.util.Objects;
 
 public class StandardServer extends LifecycleBase implements Server {
@@ -25,9 +23,9 @@ public class StandardServer extends LifecycleBase implements Server {
      */
     private String address = "localhost";
     /**
-     * 在本服务器的服务集合
+     * 在本服务器的服务
      */
-    private Service[] services = new Service[0];
+    private Service service = null;
     private final Object serviceLock = new Object();
     /**
      * 关机命令字符串
@@ -104,7 +102,13 @@ public class StandardServer extends LifecycleBase implements Server {
      */
     @Override
     public ClassLoader getParentClassLoader() {
-        return this.parentClassLoader;
+        if(Objects.nonNull(this.parentClassLoader)){
+            return this.parentClassLoader;
+        }
+        if(Objects.isNull(this.catalina)){
+            this.catalina.getParentClassLoader();
+        }
+        return ClassLoader.getSystemClassLoader();
     }
 
     /**
@@ -114,7 +118,9 @@ public class StandardServer extends LifecycleBase implements Server {
      */
     @Override
     public void setParentClassLoader(ClassLoader loader) {
+        ClassLoader classLoader = this.parentClassLoader;
         this.parentClassLoader = loader;
+        support.firePropertyChange("parentClassLoader", classLoader, loader);
     }
 
     /**
@@ -124,26 +130,40 @@ public class StandardServer extends LifecycleBase implements Server {
      */
     @Override
     public void addService(Service service) {
-        service.setServer(this);
         synchronized (serviceLock){
-            Service[] newServices = new Service[this.services.length + 1];
-            System.arraycopy(this.services, 0, newServices, 0, this.services.length);
-            newServices[this.services.length] = service;
-            this.services = newServices;
-            if(getLifecycleState().isAvailable()){
-               try {
-                   service.start();
-               }catch (LifecycleException exception){
-                   throw new RuntimeException(exception);
-               }
-            }
+            this.service = service;
             support.firePropertyChange("service", null, service);
         }
     }
 
     @Override
+    public Catalina getCatalina() {
+        return catalina;
+    }
+
+    @Override
+    public void setCatalina(Catalina catalina) {
+        this.catalina = catalina;
+    }
+
+    @Override
     public void await() {
         Thread currentThread = Thread.currentThread();
+        if (getPort() == -1) {
+            try {
+                awaitThread = currentThread;
+                while (!stopAwait) {
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException ex) {
+                        // continue and check the flag
+                    }
+                }
+            } finally {
+                awaitThread = null;
+            }
+            return;
+        }
         try {
             this.awaitSocket = new ServerSocket(getPort(), 1, InetAddress.getByName(this.address));
         }catch (IOException exception){
@@ -208,87 +228,88 @@ public class StandardServer extends LifecycleBase implements Server {
             ServerSocket serverSocket = awaitSocket;
             awaitThread = null;
             awaitSocket = null;
-
-            // Close the server socket and return
             if (serverSocket != null) {
                 try {
                     serverSocket.close();
                 } catch (IOException e) {
-                    // Ignore
                 }
             }
         }
     }
 
     @Override
-    public Service findService(String name) {
-        if(Objects.isNull(name)){
-            return null;
-        }
-        synchronized (serviceLock){
-            for (Service service : this.services){
-                if(service.equals(service.getName())){
-                    return service;
-                }
-            }
-        }
-        return null;
+    public Service findService() {
+        return this.service;
     }
 
-    @Override
-    public Service[] findService() {
-        synchronized (serviceLock){
-            return this.services.clone();
-        }
-    }
 
     @Override
-    public void removeService(Service service) {
+    public void removeService() {
         synchronized (serviceLock){
-            int currentIndex = -1;
-            for (int i = 0; i < this.services.length; i++) {
-                if(service == this.services[i]){
-                    currentIndex = i;
-                    break;
-                }
-            }
-            if(currentIndex < 0){
-                return;
-            }
             try {
-                services[currentIndex].stop();
+                this.service.stop();
             }catch (LifecycleException exception){
 
             }
-            int k = 0;
-            Service[] newServices = new Service[this.services.length - 1];
-            for (int i = 0; i < services.length; i++) {
-                if(i != currentIndex){
-                    newServices[k++] = this.services[i];
-                }
-            }
-            this.services = newServices;
+            this.service = null;
             support.firePropertyChange("service", service, null);
         }
     }
 
     @Override
     protected void initInternal() throws LifecycleException {
-
+        System.out.println("初始化服务器......");
+        synchronized (serviceLock){
+            this.service.init();
+        }
     }
 
     @Override
     protected void startInternal() throws LifecycleException {
-
+        System.out.println("启动服务器......");
+        fireLifecycleEvent(CONFIGURE_START_EVENT, null);
+        setLifecycleState(LifecycleState.STARTING);
+        synchronized (serviceLock){
+            this.service.start();
+        }
     }
 
     @Override
     protected void stopInternal() throws LifecycleException {
-
+        setLifecycleState(LifecycleState.STARTING);
+        fireLifecycleEvent(CONFIGURE_STOP_EVENT, null);
+        synchronized (serviceLock){
+            this.service.stop();
+        }
+        this.stopAwait();
     }
 
     @Override
     protected void destroyInternal() throws LifecycleException {
+        synchronized (serviceLock){
+            this.service.destroy();
+        }
+    }
 
+    private void stopAwait(){
+        this.stopAwait = true;
+        Thread t = this.awaitThread;
+        if(Objects.nonNull(t)){
+            ServerSocket socket = this.awaitSocket;
+            if(Objects.nonNull(socket)){
+                this.awaitSocket = null;
+                try {
+                    socket.close();
+                }catch (IOException exception){
+
+                }
+            }
+            t.interrupt();
+            try {
+                t.join(1000);
+            }catch (InterruptedException exception){
+
+            }
+        }
     }
 }

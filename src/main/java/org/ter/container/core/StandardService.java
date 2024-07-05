@@ -14,6 +14,7 @@ import org.ter.ter_server.util.res.StringManager;
 
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * 服务的标准实现，关联的Container是Engine,
@@ -60,28 +61,76 @@ public class StandardService extends LifecycleBase implements Service {
      */
     protected final MapperListener mapperListener = new MapperListener(this);
     @Override
-    public LifecycleState getLifecycleState() {
-        return null;
-    }
-
-    @Override
     protected void initInternal() throws LifecycleException {
+        if(Objects.nonNull(this.engine)){
+            this.engine.init();
+        }
+        for (Executor executor : this.executors) {
+            executor.init();
+        }
 
+        this.mapperListener.init();
+        synchronized (this.connectorsLock){
+            for (Connector connector : this.connectors) {
+                connector.init();
+            }
+        }
     }
 
     @Override
     protected void startInternal() throws LifecycleException {
+        setLifecycleState(LifecycleState.STARTING);
+        if(Objects.nonNull(this.engine)){
+            synchronized (this.engine){
+                this.engine.start();
+            }
+        }
+        synchronized (this.executors){
+            for (Executor executor : this.executors) {
+                executor.start();
+            }
+        }
+        mapperListener.start();
 
+        synchronized (connectorsLock){
+            for (Connector connector : this.connectors) {
+                connector.start();
+            }
+        }
     }
 
     @Override
     protected void stopInternal() throws LifecycleException {
-
+        if(Objects.nonNull(this.engine)){
+            this.engine.stop();
+        }
+        synchronized (this.executors){
+            for (Executor executor: this.executors) {
+                executor.stop();
+            }
+        }
+        this.mapperListener.stop();
+        synchronized (this.connectorsLock){
+            for (Connector connector : this.connectors) {
+                connector.stop();
+            }
+        }
     }
 
     @Override
     protected void destroyInternal() throws LifecycleException {
-
+        if(Objects.nonNull(this.engine)){
+            this.engine.destroy();
+        }
+        for (Executor executor : this.executors) {
+            executor.destroy();
+        }
+        this.mapperListener.destroy();
+        synchronized (this.connectorsLock){
+            for (Connector connector : this.connectors) {
+                connector.destroy();
+            }
+        }
     }
     @Override
     public Engine getContainer() {
@@ -99,7 +148,7 @@ public class StandardService extends LifecycleBase implements Service {
 
     @Override
     public void setName(String name) {
-        this.name =  name;
+        this.name = name;
     }
 
     @Override
@@ -114,12 +163,20 @@ public class StandardService extends LifecycleBase implements Service {
 
     @Override
     public ClassLoader getParentClassLoader() {
-        return this.parentClassLoader;
+        if(Objects.nonNull(parentClassLoader)){
+            return this.parentClassLoader;
+        }
+        if(Objects.nonNull(this.server)){
+            return this.server.getParentClassLoader();
+        }
+        return ClassLoader.getSystemClassLoader();
     }
 
     @Override
     public void setParentClassLoader(ClassLoader classLoader) {
+        ClassLoader cl = classLoader;
         this.parentClassLoader = classLoader;
+        support.firePropertyChange("parentClassLoader", cl, classLoader);
     }
 
     @Override
@@ -131,7 +188,7 @@ public class StandardService extends LifecycleBase implements Service {
     public void addConnector(Connector connector) {
         synchronized (connectorsLock){
             Connector[] newConnectors = new Connector[connectors.length + 1];
-            System.arraycopy(connector, 0, newConnectors, 0, connectors.length);
+            System.arraycopy(this.connectors, 0, newConnectors, 0, connectors.length);
             newConnectors[connectors.length] = connector;
             this.connectors = newConnectors;
 
@@ -164,26 +221,57 @@ public class StandardService extends LifecycleBase implements Service {
 
     @Override
     public void addExecutor(Executor executor) {
+        synchronized (this.executors){
+            if(!this.executors.contains(executor)){
+                this.executors.add(executor);
+                if(getLifecycleState().isAvailable()){
+                    try {
+                        executor.start();
+                    }catch (LifecycleException exception){
 
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public Executor[] findExecutors() {
-        return new Executor[0];
+        synchronized (this.executors){
+            return this.executors.toArray(new Executor[0]);
+        }
     }
 
     @Override
     public Executor getExecutor(String name) {
+        if(Objects.isNull(name)){
+            return null;
+        }
+        synchronized (executors){
+            for (Executor executor : this.executors) {
+                if(name.equals(executor.getName())){
+                    return executor;
+                }
+            }
+        }
         return null;
     }
 
     @Override
     public void removeExecutor(Executor executor) {
+        synchronized (this.executors){
+            if(this.executors.remove(executor) && getLifecycleState().isAvailable()){
+                try {
+                    executor.stop();
+                }catch (LifecycleException exception){
 
+                }
+            }
+        }
     }
 
     @Override
     public Mapper getMapper() {
-        return null;
+        return this.mapper;
     }
 }

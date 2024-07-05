@@ -181,7 +181,7 @@ public abstract class LifecycleBase implements Lifecycle{
     protected synchronized void setLifecycleState(LifecycleState state) throws LifecycleException{
         setStateInternal(state, null,true);
     }
-    protected synchronized void setState(LifecycleState state, Object data)
+    protected synchronized void setStateInternal(LifecycleState state, Object data)
             throws LifecycleException {
         setStateInternal(state, data, true);
     }

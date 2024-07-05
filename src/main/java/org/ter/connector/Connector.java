@@ -1,12 +1,14 @@
 package org.ter.connector;
 
 import org.ter.container.Service;
+import org.ter.exception.LifecycleException;
+import org.ter.lifecycle.LifecycleBase;
 import org.ter.ter_server.util.res.StringManager;
 
 /**
  * 连接器实现
  */
-public class Connector{
+public class Connector extends LifecycleBase {
     protected static final StringManager sm = StringManager.getStringManager(Connector.class);
     /**
      * 连接器关联的服务
@@ -52,18 +54,23 @@ public class Connector{
     protected String parseBodyMethods = "POST";
 
 
+    @Override
+    protected void initInternal() throws LifecycleException {
 
+    }
 
+    @Override
+    protected void startInternal() throws LifecycleException {
 
+    }
 
+    @Override
+    protected void stopInternal() throws LifecycleException {
 
+    }
 
+    @Override
+    protected void destroyInternal() throws LifecycleException {
 
-
-
-
-
-
-
-
+    }
 }

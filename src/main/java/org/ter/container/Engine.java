@@ -1,4 +1,4 @@
 package org.ter.container;
 
-public interface Engine {
+public interface Engine extends Container{
 }
