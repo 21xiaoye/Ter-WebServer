@@ -1,8 +1,9 @@
 package org.ter.startup;
 
 import org.ter.connector.Connector;
-import org.ter.container.Server;
-import org.ter.container.Service;
+import org.ter.container.*;
+import org.ter.container.core.StandardContext;
+import org.ter.container.core.StandardEngine;
 import org.ter.container.core.StandardServer;
 import org.ter.container.core.StandardService;
 import org.ter.exception.LifecycleException;
@@ -62,5 +63,30 @@ public class Ter {
         getServer();
         getConnector();
         this.server.start();
+    }
+
+    public Context addContext(Host host, String contextPath, String dir){
+        return null;
+    }
+    private Context createContext(Host host, String url){
+        String contextClass = StandardContext.class.getName();
+        if(Objects.isNull(host)){
+
+        }
+        return null;
+    }
+
+    public Host getHost(){
+        return null;
+    }
+
+    public Engine getEngine(){
+        Service service = getServer().findService();
+        if(Objects.nonNull(service.getContainer())){
+            return service.getContainer();
+        }
+        Engine engine  = new StandardEngine();
+        engine.setName("Ter");
+        return engine;
     }
 }

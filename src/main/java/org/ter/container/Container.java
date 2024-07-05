@@ -139,4 +139,11 @@ public interface Container extends Lifecycle {
      * @param data  事件数据
      */
     void fireContainerEvent(String type, Object data);
+
+    /**
+     *返回 Pipeline 对象，该对象管理与此容器关联的 Valve
+     *
+     * @return 管道
+     */
+    Pipeline getPipeline();
 }
