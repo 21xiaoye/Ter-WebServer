@@ -38,7 +38,7 @@ public class ContainerBase extends LifecycleBase implements Container {
     /**
      * 与此容器关联的 Pipeline对象
      */
-    protected final Pipeline pipeline = new StandardPipeline(this);
+//    protected final Pipeline pipeline = new StandardPipeline(this);
     /**
      * 添加子容器时，是否启动子容器
      */
@@ -108,7 +108,8 @@ public class ContainerBase extends LifecycleBase implements Container {
 
     @Override
     public Pipeline getPipeline() {
-        return this.pipeline;
+//        return this.pipeline;
+        return null;
     }
 
     @Override
@@ -230,9 +231,9 @@ public class ContainerBase extends LifecycleBase implements Container {
             this.startStopExecutor.submit(new StartChild(container));
         }
 
-        if(this.pipeline instanceof Lifecycle){
-            ((Lifecycle) this.pipeline).start();
-        }
+//        if(this.pipeline instanceof Lifecycle){
+//            ((Lifecycle) this.pipeline).start();
+//        }
         setLifecycleState(LifecycleState.STARTING);
     }
 

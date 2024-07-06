@@ -3,6 +3,7 @@ package org.ter.connector;
 import org.ter.container.Service;
 import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.LifecycleBase;
+import org.ter.lifecycle.LifecycleState;
 import org.ter.ter_server.util.res.StringManager;
 
 /**
@@ -56,12 +57,13 @@ public class Connector extends LifecycleBase {
 
     @Override
     protected void initInternal() throws LifecycleException {
-
+        System.out.println("初始化连接器......");
     }
 
     @Override
     protected void startInternal() throws LifecycleException {
-
+        System.out.println("启动连接器......");
+        setLifecycleState(LifecycleState.STARTING);
     }
 
     @Override

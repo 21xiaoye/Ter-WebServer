@@ -14,6 +14,7 @@ import java.util.WeakHashMap;
 
 public class StandardHost extends ContainerBase implements Host {
     private final Map<ClassLoader, String> childClassLoader = new WeakHashMap<>();
+    private String contextClass = "org/ter/container/core/StandardContext";
     public StandardHost(){
 
     }
@@ -33,7 +34,9 @@ public class StandardHost extends ContainerBase implements Host {
 
         super.addChild(container);
     }
-
+    public String getContextClass() {
+        return this.contextClass;
+    }
     private class MemoryLeakTrackingListener implements LifecycleListener{
         @Override
         public void lifecycleEvent(LifecycleEvent event) {
@@ -51,34 +54,5 @@ public class StandardHost extends ContainerBase implements Host {
 
         super.startInternal();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

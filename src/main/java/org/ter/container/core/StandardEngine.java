@@ -70,7 +70,7 @@ public class StandardEngine extends ContainerBase implements Engine {
     @Override
     protected void initInternal() throws LifecycleException {
         System.out.println("初始化Engine容器......");
-         super.initInternal();
+        super.initInternal();
     }
 
     @Override

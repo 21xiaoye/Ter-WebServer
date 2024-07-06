@@ -6,6 +6,7 @@ import org.ter.container.core.*;
 import org.ter.exception.LifecycleException;
 import org.ter.ter_server.util.res.StringManager;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 public class Ter {
@@ -61,12 +62,17 @@ public class Ter {
         getConnector();
         this.server.start();
     }
-
+    public Context addContext(String contextPath, String docBase){
+        return addContext(getHost(), contextPath, docBase);
+    }
     public Context addContext(Host host, String contextPath, String dir){
         return addContext(host, contextPath, contextPath, dir);
     }
     private Context addContext(Host host, String contextPath, String contextName, String dir){
         Context context = createContext(host, contextPath);
+        context.setName(contextName);
+        context.setPath(contextPath);
+        context.setDocBase(dir);
         if(Objects.nonNull(host)){
             getHost().addChild(context);
         }else {
@@ -87,10 +93,21 @@ public class Ter {
     }
     private Context createContext(Host host, String url){
         String contextClass = StandardContext.class.getName();
-        if(Objects.isNull(host)){
-            host = getHost();
+//
+//        if(Objects.isNull(host)){
+//            host = getHost();
+//        }
+//        if(host instanceof StandardHost){
+//            contextClass = ((StandardHost) host).getContextClass();
+//        }
+        try {
+            return (Context) Class.forName(contextClass).getConstructor().newInstance();
+        } catch (ClassNotFoundException | InvocationTargetException
+                 | InstantiationException | IllegalAccessException |
+                 NoSuchMethodException e) {
+            throw new RuntimeException(e);
         }
-        return null;
+
     }
 
     public Engine getEngine(){

@@ -62,6 +62,7 @@ public class StandardService extends LifecycleBase implements Service {
     protected final MapperListener mapperListener = new MapperListener(this);
     @Override
     protected void initInternal() throws LifecycleException {
+        System.out.println("初始化服务......");
         if(Objects.nonNull(this.engine)){
             this.engine.init();
         }
@@ -79,6 +80,7 @@ public class StandardService extends LifecycleBase implements Service {
 
     @Override
     protected void startInternal() throws LifecycleException {
+        System.out.println("启动服务......");
         setLifecycleState(LifecycleState.STARTING);
         if(Objects.nonNull(this.engine)){
             synchronized (this.engine){
