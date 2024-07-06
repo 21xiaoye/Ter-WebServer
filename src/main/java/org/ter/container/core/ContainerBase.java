@@ -6,10 +6,8 @@ import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.*;
 import org.ter.ter_server.util.res.StringManager;
 
-import java.awt.image.VolatileImage;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -125,6 +123,7 @@ public class ContainerBase extends LifecycleBase implements Container {
             container.setParent(this);
             this.containers.put(container.getName(), container);
         }
+        // 启动容器
         try {
             if(startChildren && (getLifecycleState().isAvailable() || LifecycleState.STARTING_PREP.equals(getLifecycleState()))){
                 container.start();

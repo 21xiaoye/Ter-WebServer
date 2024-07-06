@@ -31,7 +31,7 @@ public abstract class LifecycleBase implements Lifecycle{
     }
 
     @Override
-    public void addKLifecycleListener(LifecycleListener listener) {
+    public void addLifecycleListener(LifecycleListener listener) {
         lifecycleListeners.add(listener);
     }
 

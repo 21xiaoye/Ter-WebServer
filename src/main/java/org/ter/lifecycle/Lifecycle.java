@@ -24,7 +24,7 @@ public interface Lifecycle extends SingleUse{
      *
      * @param listener 需要添加的LifecycleEvent
      */
-    void addKLifecycleListener(LifecycleListener listener);
+    void addLifecycleListener(LifecycleListener listener);
 
     /**
      * 获取与当前生命周期相关联的LifecycleEvent

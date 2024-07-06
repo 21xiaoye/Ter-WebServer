@@ -1,4 +1,4 @@
 package org.ter.container;
 
-public interface Context {
+public interface Context extends Container{
 }

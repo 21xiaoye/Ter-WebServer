@@ -1,4 +1,4 @@
 package org.ter.container;
 
-public interface Host{
+public interface Host extends Container{
 }

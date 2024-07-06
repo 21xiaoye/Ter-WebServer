@@ -2,10 +2,7 @@ package org.ter.startup;
 
 import org.ter.connector.Connector;
 import org.ter.container.*;
-import org.ter.container.core.StandardContext;
-import org.ter.container.core.StandardEngine;
-import org.ter.container.core.StandardServer;
-import org.ter.container.core.StandardService;
+import org.ter.container.core.*;
 import org.ter.exception.LifecycleException;
 import org.ter.ter_server.util.res.StringManager;
 
@@ -66,17 +63,33 @@ public class Ter {
     }
 
     public Context addContext(Host host, String contextPath, String dir){
-        return null;
+        return addContext(host, contextPath, contextPath, dir);
+    }
+    private Context addContext(Host host, String contextPath, String contextName, String dir){
+        Context context = createContext(host, contextPath);
+        if(Objects.nonNull(host)){
+            getHost().addChild(context);
+        }else {
+            host.addChild(context);
+        }
+        return context;
+    }
+
+    public Host getHost(){
+        Engine engine = getEngine();
+        if(engine.findChildren().length >0){
+            return (Host)engine.findChildren()[0];
+        }
+        StandardHost host = new StandardHost();
+        host.setName(this.address);
+        engine.addChild(host);
+        return host;
     }
     private Context createContext(Host host, String url){
         String contextClass = StandardContext.class.getName();
         if(Objects.isNull(host)){
-
+            host = getHost();
         }
-        return null;
-    }
-
-    public Host getHost(){
         return null;
     }
 
@@ -87,6 +100,8 @@ public class Ter {
         }
         Engine engine  = new StandardEngine();
         engine.setName("Ter");
+        engine.setDefaultHost(this.address);
+        service.setContainer(engine);
         return engine;
     }
 }

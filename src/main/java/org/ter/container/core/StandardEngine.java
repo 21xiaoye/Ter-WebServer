@@ -2,157 +2,91 @@ package org.ter.container.core;
 
 import org.ter.container.Container;
 import org.ter.container.Engine;
+import org.ter.container.Host;
 import org.ter.container.Service;
 import org.ter.exception.LifecycleException;
-import org.ter.lifecycle.ContainerListener;
 import org.ter.lifecycle.LifecycleListener;
-import org.ter.lifecycle.LifecycleState;
 
-import java.beans.PropertyChangeListener;
 
-public class StandardEngine implements Engine {
-    @Override
-    public String getName() {
-        return null;
-    }
+import java.util.Locale;
+import java.util.Objects;
 
-    @Override
-    public void setName(String name) {
+public class StandardEngine extends ContainerBase implements Engine {
+    private String defaultHost = null;
+    private Service service = null;
+    public StandardEngine(){
 
     }
-
-    @Override
-    public Container getParent() {
-        return null;
-    }
-
-    @Override
-    public void setParent(Container container) {
-
-    }
-
-    @Override
-    public ClassLoader getParentClassLoader() {
-        return null;
-    }
-
-    @Override
-    public void setParentClassLoader(ClassLoader parentClassLoader) {
-
-    }
-
-    @Override
-    public void addChild(Container container) {
-
-    }
-
-    @Override
-    public void addContainerListener(ContainerListener listener) {
-
-    }
-
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-
-    }
-
-    @Override
-    public Container findChild(String name) {
-        return null;
-    }
-
-    @Override
-    public Container[] findChildren() {
-        return new Container[0];
-    }
-
-    @Override
-    public ContainerListener[] findContainerListeners() {
-        return new ContainerListener[0];
-    }
-
-    @Override
-    public void removeChild(Container container) {
-
-    }
-
-    @Override
-    public void removeContainerListener(ContainerListener listener) {
-
-    }
-
-    @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-
-    }
-
-    @Override
-    public void fireContainerEvent(String type, Object data) {
-
-    }
-
-    @Override
-    public void addKLifecycleListener(LifecycleListener listener) {
-
-    }
-
     @Override
     public LifecycleListener[] findLifecycleListeners() {
         return new LifecycleListener[0];
     }
-
-    @Override
-    public void remoteLifecycleListener(LifecycleListener listener) {
-
-    }
-
-    @Override
-    public void init() throws LifecycleException {
-
-    }
-
-    @Override
-    public void start() throws LifecycleException {
-
-    }
-
-    @Override
-    public void stop() throws LifecycleException {
-
-    }
-
-    @Override
-    public void destroy() throws LifecycleException {
-
-    }
-
-    @Override
-    public LifecycleState getLifecycleState() {
-        return null;
-    }
-
-    @Override
-    public String getStateName() {
-        return null;
-    }
-
     @Override
     public String getDefaultHost() {
-        return null;
+        return this.defaultHost;
     }
-
     @Override
     public void setDefaultHost(String defaultHost) {
+        if(Objects.isNull(defaultHost)){
+            this.defaultHost = null;
+        }else{
+            this.defaultHost = defaultHost.toLowerCase(Locale.ENGLISH);
+        }
+        if(getLifecycleState().isAvailable()){
 
+        }
     }
 
     @Override
     public Service getService() {
-        return null;
+        return this.service;
     }
 
     @Override
     public void setService(Service service) {
+        this.service = service;
+    }
 
+    @Override
+    public void addChild(Container container) {
+        // 引擎的子容器只能为Host
+        if(!(container instanceof Host)){
+            throw new IllegalArgumentException(sm.getString("standardEngine.notHost"));
+        }
+        super.addChild(container);
+    }
+
+    /**
+     * 引擎位于容器层次结构的顶部,
+     * 不能为其添加父容器
+     *
+     * @param container 将此容器作为子容器添加到的容器
+     */
+     @Override
+    public void setParent(Container container) {
+        throw new IllegalArgumentException(sm.getString("standardEngine.notPARENT"));
+    }
+
+    @Override
+    protected void initInternal() throws LifecycleException {
+        System.out.println("初始化Engine容器......");
+         super.initInternal();
+    }
+
+    @Override
+    protected void startInternal() throws LifecycleException {
+        System.out.println("启动Engine容器......");
+        super.startInternal();
+    }
+
+    @Override
+    public ClassLoader getParentClassLoader() {
+         if(Objects.nonNull(parentClassLoader)){
+             return parentClassLoader;
+         }
+         if(Objects.nonNull(service)){
+             return service.getParentClassLoader();
+         }
+        return ClassLoader.getSystemClassLoader();
     }
 }

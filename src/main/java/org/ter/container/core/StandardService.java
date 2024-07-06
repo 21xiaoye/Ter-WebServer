@@ -139,6 +139,21 @@ public class StandardService extends LifecycleBase implements Service {
     @Override
     public void setContainer(Engine engine){
         this.engine = engine;
+        this.engine.setService(this);
+        if(getLifecycleState().isAvailable()){
+            try {
+                if(Objects.nonNull(this.engine)){
+                    this.engine.start();
+                }
+            }catch (LifecycleException exception){
+
+            }
+            try {
+                this.mapperListener.start();
+            }catch (LifecycleException exception){
+
+            }
+        }
     }
 
     @Override

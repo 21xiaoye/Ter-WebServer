@@ -1,7 +1,5 @@
 package org.ter;
 
-import org.ter.container.core.StandardServer;
-import org.ter.container.core.StandardService;
 import org.ter.exception.LifecycleException;
 import org.ter.startup.Ter;
 
