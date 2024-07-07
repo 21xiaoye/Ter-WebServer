@@ -1,10 +1,17 @@
 package org.ter.connector;
 
 import org.ter.container.Service;
+import org.ter.container.util.StringUtil;
 import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.LifecycleBase;
 import org.ter.lifecycle.LifecycleState;
 import org.ter.ter_server.util.res.StringManager;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * 连接器实现
@@ -53,11 +60,100 @@ public class Connector extends LifecycleBase {
      * 解析的 HTTP 方法的逗号分隔列表
      */
     protected String parseBodyMethods = "POST";
+    protected HashSet<String> parseBodyMethodsSet;
+    /**
+     * URL编码
+     */
+    private Charset uriCharset = StandardCharsets.UTF_8;
+    public Service getService() {
+        return service;
+    }
+    public void setService(Service service) {
+        this.service = service;
+    }
+    public long getAsyncTimeout() {
+        return asyncTimeout;
+    }
+    public void setAsyncTimeout(long asyncTimeout) {
+        this.asyncTimeout = asyncTimeout;
+    }
+    public int getPort() {
+        return port;
+    }
+    public void setPort(int port) {
+        this.port = port;
+    }
+    public String getScheme() {
+        return scheme;
+    }
+    public void setScheme(String scheme) {
+        this.scheme = scheme;
+    }
+    public boolean getSecure(){
+        return this.secure;
+    }
+    public void setSecure(boolean secure) {
+        this.secure = secure;
+    }
+    public int getMaxCookieCount() {
+        return maxCookieCount;
+    }
+    public void setMaxCookieCount(int maxCookieCount) {
+        this.maxCookieCount = maxCookieCount;
+    }
+    public int getMaxParameterCount() {
+        return maxParameterCount;
+    }
+    public void setMaxParameterCount(int maxParameterCount) {
+        this.maxParameterCount = maxParameterCount;
+    }
+    public int getMaxPostSize() {
+        return maxPostSize;
+    }
+    public void setMaxPostSize(int maxPostSize) {
+        this.maxPostSize = maxPostSize;
+    }
+    public int getMaxSavePostSize() {
+        return maxSavePostSize;
+    }
+    public void setMaxSavePostSize(int maxSavePostSize) {
+        this.maxSavePostSize = maxSavePostSize;
+    }
+    public void setParseBodyMethods(String parseBodyMethods) {
+        HashSet<String> methodsSet = new HashSet<>();
+        if(Objects.nonNull(parseBodyMethods)){
+            methodsSet.addAll(Arrays.asList(StringUtil.splitCommaSeparated(parseBodyMethods)));
+        }
+        if(methodsSet.contains("TRACE")){
+            throw new IllegalArgumentException(sm.getString("coyoteConnector.parseBodyMethodNoTrace"));
+        }
+        this.parseBodyMethodsSet = methodsSet;
+        this.parseBodyMethods = parseBodyMethods;
+    }
+    public String getParseBodyMethods() {
+        return parseBodyMethods;
+    }
+    public HashSet<String> getParseBodyMethodsSet() {
+        return parseBodyMethodsSet;
+    }
+    public void setParseBodyMethodsSet(HashSet<String> parseBodyMethodsSet) {
+        this.parseBodyMethodsSet = parseBodyMethodsSet;
+    }
 
+    public Charset getUriCharset() {
+        return uriCharset;
+    }
+
+    public void setUriCharset(Charset uriCharset) {
+        this.uriCharset = uriCharset;
+    }
 
     @Override
     protected void initInternal() throws LifecycleException {
         System.out.println("初始化连接器......");
+        if(Objects.isNull(this.parseBodyMethodsSet)){
+            setParseBodyMethods(getParseBodyMethods());
+        }
     }
 
     @Override

@@ -93,13 +93,12 @@ public class Ter {
     }
     private Context createContext(Host host, String url){
         String contextClass = StandardContext.class.getName();
-//
-//        if(Objects.isNull(host)){
-//            host = getHost();
-//        }
-//        if(host instanceof StandardHost){
-//            contextClass = ((StandardHost) host).getContextClass();
-//        }
+        if(Objects.isNull(host)){
+            host = getHost();
+        }
+        if(host instanceof StandardHost){
+            contextClass = ((StandardHost) host).getContextClass();
+        }
         try {
             return (Context) Class.forName(contextClass).getConstructor().newInstance();
         } catch (ClassNotFoundException | InvocationTargetException

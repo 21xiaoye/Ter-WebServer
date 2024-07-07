@@ -14,7 +14,7 @@ import java.util.WeakHashMap;
 
 public class StandardHost extends ContainerBase implements Host {
     private final Map<ClassLoader, String> childClassLoader = new WeakHashMap<>();
-    private String contextClass = "org/ter/container/core/StandardContext";
+    private String contextClass = "org.ter.container.core.StandardContext";
     public StandardHost(){
 
     }
@@ -51,7 +51,6 @@ public class StandardHost extends ContainerBase implements Host {
     @Override
     protected void startInternal() throws LifecycleException {
         System.out.println("启动Host......");
-
         super.startInternal();
     }
 
