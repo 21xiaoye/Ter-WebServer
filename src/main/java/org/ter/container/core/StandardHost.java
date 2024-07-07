@@ -49,6 +49,12 @@ public class StandardHost extends ContainerBase implements Host {
     }
 
     @Override
+    protected void initInternal() throws LifecycleException {
+        System.out.println("初始化Host......");
+        super.initInternal();
+    }
+
+    @Override
     protected void startInternal() throws LifecycleException {
         System.out.println("启动Host......");
         super.startInternal();
