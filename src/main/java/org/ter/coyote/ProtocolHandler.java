@@ -84,32 +84,4 @@ public interface ProtocolHandler {
      * @return 返回等待的剩余时间
      */
     long awaitConnectionsClose(long waitMillis);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

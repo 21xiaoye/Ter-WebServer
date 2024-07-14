@@ -54,6 +54,7 @@ public class Ter {
             return service.findConnectors()[0];
         }
         Connector connector = new Connector();
+        connector.setPort(getPort());
         service.addConnector(connector);
         return connector;
     }

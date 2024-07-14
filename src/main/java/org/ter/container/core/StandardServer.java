@@ -276,7 +276,7 @@ public class StandardServer extends LifecycleBase implements Server {
 
     @Override
     protected void stopInternal() throws LifecycleException {
-        setLifecycleState(LifecycleState.STARTING);
+        setLifecycleState(LifecycleState.STOPPING);
         fireLifecycleEvent(CONFIGURE_STOP_EVENT, null);
         synchronized (serviceLock){
             this.service.stop();

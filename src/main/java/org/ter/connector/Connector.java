@@ -1,7 +1,11 @@
 package org.ter.connector;
 
 import org.ter.container.Service;
+import org.ter.container.util.IntrospectionUtils;
 import org.ter.container.util.StringUtil;
+import org.ter.coyote.Adapter;
+import org.ter.coyote.ProtocolHandler;
+import org.ter.coyote.http1.Http11NioProtocol;
 import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.LifecycleBase;
 import org.ter.lifecycle.LifecycleState;
@@ -65,6 +69,32 @@ public class Connector extends LifecycleBase {
      * URL编码
      */
     private Charset uriCharset = StandardCharsets.UTF_8;
+    /**
+     * Coyote 协议处理器
+     */
+    protected final ProtocolHandler protocolHandler;
+    /**
+     * 默认的Coyote 协议处理器
+     */
+    protected String protocolHandlerClassName = "org.ter.coyote.http1.Http11NioProtocol";
+    /**
+     * Coyote 适配器
+     */
+    protected Adapter adapter = null;
+    public Connector(){
+        this(null);
+    }
+    public Connector(String protocol){
+        ProtocolHandler p = null;
+        try {
+            Class<?> aClass = Class.forName(protocolHandlerClassName);
+            p = (ProtocolHandler) aClass.getConstructor().newInstance();
+        }catch (Exception exception){
+            // 日志记录
+        }finally {
+            this.protocolHandler = p;
+        }
+    }
     public Service getService() {
         return service;
     }
@@ -82,6 +112,7 @@ public class Connector extends LifecycleBase {
     }
     public void setPort(int port) {
         this.port = port;
+        setProperty("port",String.valueOf(port));
     }
     public String getScheme() {
         return scheme;
@@ -154,12 +185,22 @@ public class Connector extends LifecycleBase {
         if(Objects.isNull(this.parseBodyMethodsSet)){
             setParseBodyMethods(getParseBodyMethods());
         }
+        try {
+            protocolHandler.init();
+        }catch (Exception exception){
+            throw new LifecycleException(sm.getString("coyoteConnector.protocolHandlerInitializationFailed"), exception);
+        }
     }
 
     @Override
     protected void startInternal() throws LifecycleException {
         System.out.println("启动连接器......");
         setLifecycleState(LifecycleState.STARTING);
+        try {
+            protocolHandler.start();
+        } catch (Exception exception) {
+            throw new LifecycleException(sm.getString("coyoteConnector.protocolHandlerStartFailed"), exception);
+        }
     }
 
     @Override
@@ -170,5 +211,16 @@ public class Connector extends LifecycleBase {
     @Override
     protected void destroyInternal() throws LifecycleException {
 
+    }
+
+    /**
+     * 在协议处理器上设置属性
+     *
+     * @param name  属性名称
+     * @param value 属性值
+     * @return  设置结果
+     */
+    public boolean setProperty(String name, String value) {
+        return IntrospectionUtils.setProperty(protocolHandler, name, value);
     }
 }
