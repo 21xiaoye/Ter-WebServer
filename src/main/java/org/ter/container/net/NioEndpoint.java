@@ -8,7 +8,7 @@ import java.util.concurrent.CountDownLatch;
 /**
  * 处理网络连接
  */
-public class NioEndpoint extends AbstractEndpoint<ByteChannel, SocketChannel> {
+public class NioEndpoint extends AbstractEndpoint<NioChannel, SocketChannel> {
     /**
      * 服务套接字
      */
@@ -25,10 +25,9 @@ public class NioEndpoint extends AbstractEndpoint<ByteChannel, SocketChannel> {
     }
     protected void initServerSocket() throws Exception{
         serverSocket = ServerSocketChannel.open();
-        InetSocketAddress socketAddress = new InetSocketAddress(getAddress(), getPort());
-        serverSocket.socket().bind(socketAddress);
+        serverSocket.socket().bind(new InetSocketAddress(getPort()));
         serverSocket.configureBlocking(true);
-        System.out.println("服务器监听"+getAddress()+":"+getPort()+"成功");
+        System.out.println("服务器监听端口"+getPort()+"成功");
     }
     @Override
     protected void doCloseServerSocket() throws Exception{
@@ -53,6 +52,7 @@ public class NioEndpoint extends AbstractEndpoint<ByteChannel, SocketChannel> {
     @Override
     protected void startInternal() throws Exception {
         System.out.println("启动成功......");
+        startAcceptorThread();
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.net.InetAddress;
 
 
 /**
- * @param <S> 关联套接字包装器使用的类型
+ * @param <S> 关联的套接字包装器使用的类型
  * @param <U> 所使用的底层套接字的类型
  */
 public abstract class AbstractEndpoint <S,U>{
@@ -23,11 +23,32 @@ public abstract class AbstractEndpoint <S,U>{
      * 服务器套接字地址
      */
     private InetAddress address;
+    private String name = "TP";
+    /**
+     * 默认值为 true - 创建的线程将处于守护进程模式。如果设置为 false，则控制线程将不是守护进程 - 并且将使进程保持活动状态。
+     */
+    private boolean daemon = true;
+    /**
+     * 服务套接字监听的端口
+     */
     private int port;
     public int getPort() { return port; }
     public void setPort(int port ) { this.port=port; }
     public InetAddress getAddress() { return address; }
     public void setAddress(InetAddress address) { this.address = address; }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public boolean getDaemon(){
+        return daemon;
+    }
+    public void setDaemon(boolean daemon){
+        this.daemon = daemon;
+    }
+
     /**
      * 用于接受新连接，并将其交给工作线程处理
      */
@@ -61,6 +82,18 @@ public abstract class AbstractEndpoint <S,U>{
 
 
     protected abstract void doCloseServerSocket() throws Exception;
+
+    /**
+     * 开启接受线程，用于接收网络连接
+     */
+    protected void startAcceptorThread(){
+        acceptor  = new Acceptor<>(this);
+        String threadName = getName() + "-Acceptor";
+        acceptor.setThreadName(threadName);
+        Thread thread = new Thread(acceptor, threadName);
+        thread.setDaemon(daemon);
+        thread.start();
+    }
 
 
 
