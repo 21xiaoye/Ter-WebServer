@@ -5,7 +5,6 @@ import org.ter.container.util.IntrospectionUtils;
 import org.ter.container.util.StringUtil;
 import org.ter.coyote.Adapter;
 import org.ter.coyote.ProtocolHandler;
-import org.ter.coyote.http1.Http11NioProtocol;
 import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.LifecycleBase;
 import org.ter.lifecycle.LifecycleState;

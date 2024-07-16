@@ -4,15 +4,13 @@ import org.ter.container.net.AbstractEndpoint;
 import org.ter.container.net.NioChannel;
 import org.ter.container.net.NioEndpoint;
 import org.ter.coyote.Adapter;
-
-import java.nio.channels.ByteChannel;
 import java.util.concurrent.Executor;
 
 public class Http11NioProtocol extends AbstractHttp1Protocol<NioChannel> {
     public Http11NioProtocol() {
         this(new NioEndpoint());
     }
-    public Http11NioProtocol(AbstractEndpoint<NioChannel, ?> endpoint) {
+    public Http11NioProtocol(NioEndpoint endpoint) {
         super(endpoint);
     }
 

@@ -3,6 +3,7 @@ package org.ter.container.net;
 import org.ter.ter_server.util.res.StringManager;
 
 import java.net.InetAddress;
+import java.nio.channels.SocketChannel;
 
 
 /**
@@ -32,10 +33,22 @@ public abstract class AbstractEndpoint <S,U>{
      * 服务套接字监听的端口
      */
     private int port;
+    /**
+     * 用于接受新连接，并将其交给工作线程处理
+     */
+    protected Acceptor<U> acceptor;
     public int getPort() { return port; }
-    public void setPort(int port ) { this.port=port; }
+    public void setPort(int port ) { this.port = port; }
     public InetAddress getAddress() { return address; }
     public void setAddress(InetAddress address) { this.address = address; }
+
+    public boolean isPaused() {
+        return paused;
+    }
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
     public String getName() {
         return name;
     }
@@ -49,10 +62,13 @@ public abstract class AbstractEndpoint <S,U>{
         this.daemon = daemon;
     }
 
-    /**
-     * 用于接受新连接，并将其交给工作线程处理
-     */
-    protected Acceptor<U> acceptor;
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
+    }
 
     public void init() throws Exception{
         System.out.println("底层套接字服务器初始化......");
@@ -79,10 +95,6 @@ public abstract class AbstractEndpoint <S,U>{
             throw throwable;
         }
     }
-
-
-    protected abstract void doCloseServerSocket() throws Exception;
-
     /**
      * 开启接受线程，用于接收网络连接
      */
@@ -94,38 +106,27 @@ public abstract class AbstractEndpoint <S,U>{
         thread.setDaemon(daemon);
         thread.start();
     }
+    protected abstract void doCloseServerSocket() throws Exception;
+    protected abstract SocketChannel serverSocketAccept() throws Exception;
+    protected abstract boolean setSocketOptions(U socket);
 
+    /**
+     * 在配置接受的套接字或尝试分派其进行处理时发生错误时，
+     * 必须立即关闭连接时调用。
+     * 与套接字关联的包装器将用于关闭
+     *
+     * @param socket 新接受的客户端套接字连接
+     */
+    protected void closeSocket(U socket){
+        // 关闭套接字
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * 销毁关闭客户端套接字连接
+     * 当连接器未处于允许处理套接字的状态，
+     * 或者存在阻止分配套接字包装器的错误时，将使用此方法。
+     *
+     * @param socket 新接受的套接字连接
+     */
+    protected abstract void destroySocket(U socket);
 }
