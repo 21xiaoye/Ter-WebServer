@@ -1,10 +1,12 @@
 package org.ter.container.net;
 
+import org.ter.container.net.wrapper.SocketWrapperBase;
 import org.ter.ter_server.util.res.StringManager;
 
 import java.net.InetAddress;
 import java.nio.channels.SocketChannel;
-
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @param <S> 关联的套接字包装器使用的类型
@@ -37,6 +39,24 @@ public abstract class AbstractEndpoint <S,U>{
      * 用于接受新连接，并将其交给工作线程处理
      */
     protected Acceptor<U> acceptor;
+    /**
+     * socket 属性
+     */
+    protected final SocketProperties socketProperties = new SocketProperties();
+    /**
+     * 保存当前所有的连接
+     */
+    protected Map<U, SocketWrapperBase<S>> connections = new ConcurrentHashMap<>();
+    /**
+     * 工作线程优先级
+     */
+    protected int threadPriority = Thread.NORM_PRIORITY;
+    public void setThreadPriority(int threadPriority) {
+        this.threadPriority = threadPriority;
+    }
+    public int getThreadPriority() {
+        return threadPriority;
+    }
     public int getPort() { return port; }
     public void setPort(int port ) { this.port = port; }
     public InetAddress getAddress() { return address; }
@@ -82,11 +102,6 @@ public abstract class AbstractEndpoint <S,U>{
         unbind();
     }
 
-    protected abstract void bind() throws Exception;
-    protected abstract void unbind() throws  Exception;
-    protected abstract void startInternal() throws Exception;
-    protected abstract void stopInternal() throws Exception;
-
     private void bindWithClearUp() throws Exception {
         try {
             bind();
@@ -106,10 +121,6 @@ public abstract class AbstractEndpoint <S,U>{
         thread.setDaemon(daemon);
         thread.start();
     }
-    protected abstract void doCloseServerSocket() throws Exception;
-    protected abstract SocketChannel serverSocketAccept() throws Exception;
-    protected abstract boolean setSocketOptions(U socket);
-
     /**
      * 在配置接受的套接字或尝试分派其进行处理时发生错误时，
      * 必须立即关闭连接时调用。
@@ -129,4 +140,12 @@ public abstract class AbstractEndpoint <S,U>{
      * @param socket 新接受的套接字连接
      */
     protected abstract void destroySocket(U socket);
+
+    protected abstract void bind() throws Exception;
+    protected abstract void unbind() throws  Exception;
+    protected abstract void startInternal() throws Exception;
+    protected abstract void stopInternal() throws Exception;
+    protected abstract void doCloseServerSocket() throws Exception;
+    protected abstract SocketChannel serverSocketAccept() throws Exception;
+    protected abstract boolean setSocketOptions(U socket);
 }

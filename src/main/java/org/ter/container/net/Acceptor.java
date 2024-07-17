@@ -46,6 +46,7 @@ public class Acceptor<U> implements Runnable{
                 U socket;
                 try {
                     socket = (U) endpoint.serverSocketAccept();
+                    System.out.println("新的连接为"+socket);
                 } catch (Exception exception) {
                     if (endpoint.isRunning()) {
                         throw exception;

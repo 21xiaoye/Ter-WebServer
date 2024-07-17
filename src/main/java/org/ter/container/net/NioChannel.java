@@ -1,5 +1,7 @@
 package org.ter.container.net;
 
+import org.ter.container.net.wrapper.NioSocketWrapper;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
@@ -13,6 +15,7 @@ import java.nio.channels.SocketChannel;
 public class NioChannel implements ByteChannel, ScatteringByteChannel, GatheringByteChannel {
     protected final SocketBufferHandler bufferHandler;
     protected SocketChannel socketChannel = null;
+    protected NioSocketWrapper socketWrapper = null;
 
     public NioChannel(SocketBufferHandler bufferHandler){
         this.bufferHandler = bufferHandler;
@@ -140,5 +143,18 @@ public class NioChannel implements ByteChannel, ScatteringByteChannel, Gathering
     @Override
     public void close() throws IOException {
         socketChannel.close();
+    }
+
+    /**
+     * 重置通道
+     *
+     * @param channel       客户端连接的通道
+     * @param socketWrapper 此套接字封装器
+     * @throws IOException 如果在重置通道时遇到问题
+     */
+    public void reset(SocketChannel channel, NioSocketWrapper socketWrapper) throws IOException {
+        this.socketChannel = channel;
+        this.socketWrapper = socketWrapper;
+        bufferHandler.reset();
     }
 }

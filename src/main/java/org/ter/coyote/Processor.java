@@ -1,7 +1,7 @@
 package org.ter.coyote;
 
 import org.ter.ter_server.util.net.SocketEvent;
-import org.ter.ter_server.util.net.SocketWrapperBase;
+import org.ter.container.net.wrapper.SocketWrapperBase;
 
 import java.io.IOException;
 
