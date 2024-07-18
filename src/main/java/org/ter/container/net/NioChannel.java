@@ -157,4 +157,8 @@ public class NioChannel implements ByteChannel, ScatteringByteChannel, Gathering
         this.socketWrapper = socketWrapper;
         bufferHandler.reset();
     }
+
+    public SocketChannel getSocketChannel() {
+        return socketChannel;
+    }
 }
