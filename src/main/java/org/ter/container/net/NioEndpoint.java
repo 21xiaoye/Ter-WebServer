@@ -4,6 +4,7 @@ import org.ter.container.net.wrapper.NioSocketWrapper;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -76,8 +77,8 @@ public class NioEndpoint extends AbstractEndpoint<NioChannel, SocketChannel> {
     @Override
     protected void startInternal() throws Exception {
         System.out.println("启动成功......");
-        startPollerThread();
         startAcceptorThread();
+        startPollerThread();
     }
 
     /**
@@ -143,6 +144,7 @@ public class NioEndpoint extends AbstractEndpoint<NioChannel, SocketChannel> {
             socketWrapper = newWrapper;
 
             socket.configureBlocking(false);
+            socket.register(poller.getSelector(), SelectionKey.OP_READ);
             poller.register(socketWrapper);
             return true;
         }catch (Throwable throwable){

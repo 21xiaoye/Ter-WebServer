@@ -19,10 +19,12 @@ public class NioSocketWrapper extends SocketWrapperBase<NioChannel> {
         poller = endpoint.getPoller();
         readLock = new Object();
         writeLock = new Object();
+//        this.poller = poller;
     }
     public Poller getPoller() {
         return poller;
     }
+
 
     public int getInterestOps() {
         return interestOps;

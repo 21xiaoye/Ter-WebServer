@@ -3,26 +3,29 @@ package org.ter.container.net;
 import org.ter.container.net.wrapper.NioSocketWrapper;
 
 import java.io.IOException;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * 轮询器
  */
 public class Poller implements Runnable{
-    private Selector selector;
+    private final Selector selector;
     private volatile boolean close = false;
     public static final int OP_REGISTER = 0x100;
-    private final ConcurrentLinkedQueue<PollerEvent> events =
-            new ConcurrentLinkedQueue<>();
+
+    private long selectorTimeout = 1000;
+    private final BlockingQueue<PollerEvent> events =
+            new LinkedBlockingDeque<>();
     public Poller() throws IOException {
         this.selector = Selector.open();
     }
+
 
     public Selector getSelector() {
         return selector;
@@ -30,8 +33,17 @@ public class Poller implements Runnable{
 
     @Override
     public void run() {
-        System.out.println("开启轮询器......");
         while (true){
+            try {
+                if (!close) {
+                    events();
+                    selector.select(selectorTimeout);
+                }
+            } catch (IOException e) {
+                // 记录日志
+            }
+
+
             if(close){
                 try {
                     selector.close();
@@ -40,13 +52,14 @@ public class Poller implements Runnable{
                 }
                 break;
             }
-            Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
-            while (Objects.isNull(iterator) && iterator.hasNext()){
+            Iterator<SelectionKey> iterator =
+                    selector.selectedKeys().iterator();
+            while (iterator.hasNext()){
                 SelectionKey selectionKey = iterator.next();
                 iterator.remove();
                 NioSocketWrapper attachment = (NioSocketWrapper)selectionKey.attachment();
                 if(Objects.nonNull(attachment)){
-
+                    processKey(selectionKey, attachment);
                 }
             }
 
@@ -54,23 +67,24 @@ public class Poller implements Runnable{
     }
 
     protected void processKey(SelectionKey selectionKey, NioSocketWrapper socketWrapper){
+        System.out.println("有新的数据待处理......");
         if(selectionKey.isValid()){
             if(selectionKey.isReadable()){
-
+                System.out.println("有新的数据读取......");
             }
             if(selectionKey.isWritable()){
 
             }
         }
     }
-    public void addEvent(PollerEvent pollerEvent){
-        events.add(pollerEvent);
+    public void addEvent(PollerEvent pollerEvent) throws InterruptedException {
+        events.put(pollerEvent);
         selector.wakeup();
     }
     private PollerEvent createPollerEvent(NioSocketWrapper socketWrapper, int interestOps) {
         return new PollerEvent(socketWrapper, interestOps);
     }
-    public void register(final NioSocketWrapper socketWrapper){
+    public void register(final NioSocketWrapper socketWrapper) throws InterruptedException {
         socketWrapper.interestOps(SelectionKey.OP_READ);
         addEvent(createPollerEvent(socketWrapper, OP_REGISTER));
     }
@@ -93,7 +107,7 @@ public class Poller implements Runnable{
             }
             if(OP_REGISTER == interestOps){
                 try {
-                    socketChannel.register(getSelector(), SelectionKey.OP_READ, socketWrapper);
+                    SelectionKey key = socketChannel.register(getSelector(), SelectionKey.OP_READ, socketWrapper);
                 } catch (Exception exception) {
                     // 记录日志
                 }
