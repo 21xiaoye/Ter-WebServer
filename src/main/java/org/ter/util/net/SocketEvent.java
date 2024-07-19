@@ -1,4 +1,4 @@
-package org.ter.ter_server.util.net;
+package org.ter.util.net;
 
 /**
  * 事件连接状态

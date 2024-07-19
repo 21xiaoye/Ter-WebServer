@@ -1,8 +1,7 @@
 package org.ter.coyote.http1;
 
-import org.ter.container.net.AbstractEndpoint;
-import org.ter.container.net.NioChannel;
-import org.ter.container.net.NioEndpoint;
+import org.ter.util.net.NioChannel;
+import org.ter.util.net.NioEndpoint;
 import org.ter.coyote.Adapter;
 import java.util.concurrent.Executor;
 

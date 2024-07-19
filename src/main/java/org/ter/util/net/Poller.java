@@ -1,6 +1,6 @@
-package org.ter.container.net;
+package org.ter.util.net;
 
-import org.ter.container.net.wrapper.NioSocketWrapper;
+import org.ter.util.net.wrapper.NioSocketWrapper;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
@@ -18,11 +18,13 @@ public class Poller implements Runnable{
     private final Selector selector;
     private volatile boolean close = false;
     public static final int OP_REGISTER = 0x100;
+    private final NioEndpoint endpoint;
 
     private long selectorTimeout = 1000;
     private final BlockingQueue<PollerEvent> events =
             new LinkedBlockingDeque<>();
-    public Poller() throws IOException {
+    public Poller(NioEndpoint endpoint) throws IOException {
+        this.endpoint = endpoint;
         this.selector = Selector.open();
     }
 
@@ -42,8 +44,6 @@ public class Poller implements Runnable{
             } catch (IOException e) {
                 // 记录日志
             }
-
-
             if(close){
                 try {
                     selector.close();
@@ -59,24 +59,45 @@ public class Poller implements Runnable{
                 iterator.remove();
                 NioSocketWrapper attachment = (NioSocketWrapper)selectionKey.attachment();
                 if(Objects.nonNull(attachment)){
-                    processKey(selectionKey, attachment);
+                    try {
+                        processKey(selectionKey, attachment);
+                    } catch (Exception exception) {
+                        // 记录日志
+                    }
                 }
             }
 
         }
     }
 
-    protected void processKey(SelectionKey selectionKey, NioSocketWrapper socketWrapper){
-        System.out.println("有新的数据待处理......");
+    /**
+     * 主要用来处理socket连接的读写
+     *
+     * @param selectionKey   选择器密钥
+     * @param socketWrapper  socket连接封装器
+     * @throws Exception
+     */
+    protected void processKey(SelectionKey selectionKey, NioSocketWrapper socketWrapper) throws Exception {
         if(selectionKey.isValid()){
+            boolean closeSocket = false;
             if(selectionKey.isReadable()){
-                System.out.println("有新的数据读取......");
+                if(!endpoint.processSocket(socketWrapper, SocketEvent.OPEN_READ,true)){
+                    closeSocket = true;
+                }
             }
             if(selectionKey.isWritable()){
-
+                if(!endpoint.processSocket(socketWrapper, SocketEvent.OPEN_WRITE, true)){
+                    closeSocket = true;
+                }
             }
+            if(closeSocket){
+                endpoint.cancelledKey(selectionKey, socketWrapper);
+            }
+        }else {
+            endpoint.cancelledKey(selectionKey, socketWrapper);
         }
     }
+
     public void addEvent(PollerEvent pollerEvent) throws InterruptedException {
         events.put(pollerEvent);
         selector.wakeup();
@@ -107,7 +128,7 @@ public class Poller implements Runnable{
             }
             if(OP_REGISTER == interestOps){
                 try {
-                    SelectionKey key = socketChannel.register(getSelector(), SelectionKey.OP_READ, socketWrapper);
+                    socketChannel.register(getSelector(), SelectionKey.OP_READ, socketWrapper);
                 } catch (Exception exception) {
                     // 记录日志
                 }
@@ -116,12 +137,21 @@ public class Poller implements Runnable{
         return result;
     }
 
+    protected void unreg(SelectionKey sk, NioSocketWrapper socketWrapper, int readyOps) {
+        // This is a must, so that we don't have multiple threads messing with the socket
+        reg(sk, socketWrapper, sk.interestOps() & (~readyOps));
+    }
+
+    protected void reg(SelectionKey sk, NioSocketWrapper socketWrapper, int intops) {
+        sk.interestOps(intops);
+        socketWrapper.interestOps(intops);
+    }
+
 
     /**
      * 轮询事件
      */
     public static class PollerEvent {
-
         private NioSocketWrapper socketWrapper;
         private int interestOps;
 

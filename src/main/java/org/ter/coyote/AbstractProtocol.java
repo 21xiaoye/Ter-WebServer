@@ -1,6 +1,6 @@
 package org.ter.coyote;
 
-import org.ter.container.net.AbstractEndpoint;
+import org.ter.util.net.AbstractEndpoint;
 import org.ter.ter_server.util.res.StringManager;
 
 public abstract class AbstractProtocol<S> implements ProtocolHandler{

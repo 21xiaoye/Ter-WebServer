@@ -1,4 +1,4 @@
-package org.ter.container.net;
+package org.ter.util.net;
 
 
 /**
@@ -69,33 +69,4 @@ public class Acceptor<U> implements Runnable{
     public void stop(){
         this.stopCalled = true;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

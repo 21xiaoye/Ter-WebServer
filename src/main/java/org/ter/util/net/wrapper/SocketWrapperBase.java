@@ -1,11 +1,15 @@
-package org.ter.container.net.wrapper;
+package org.ter.util.net.wrapper;
 
-import org.ter.container.net.AbstractEndpoint;
-import org.ter.container.net.SocketBufferHandler;
+import org.ter.util.net.AbstractEndpoint;
+import org.ter.util.net.SocketBufferHandler;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class SocketWrapperBase <E>{
     private E socket;
     private final AbstractEndpoint<E,?> endpoint;
+    private final Lock lock = new ReentrantLock();
     protected String localAddr = null;
     private String localName = null;
     private int localPort = -1;
@@ -18,10 +22,15 @@ public abstract class SocketWrapperBase <E>{
         this.endpoint = endpoint;
         this.socket = socket;
     }
+    public Lock getLock(){
+        return lock;
+    }
     public E getSocket() {
         return socket;
     }
     public AbstractEndpoint<E, ?> getEndpoint() {
         return endpoint;
+    }
+    public void close() {
     }
 }

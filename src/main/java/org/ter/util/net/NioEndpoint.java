@@ -1,13 +1,11 @@
-package org.ter.container.net;
+package org.ter.util.net;
 
-import org.ter.container.net.wrapper.NioSocketWrapper;
+import org.ter.util.net.wrapper.NioSocketWrapper;
+import org.ter.util.net.wrapper.SocketWrapperBase;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -39,8 +37,6 @@ public class NioEndpoint extends AbstractEndpoint<NioChannel, SocketChannel> {
 
     /**
      * 初始化服务套接字
-     *
-     * @throws Exception 初始化服务套接字时发生错误
      */
     protected void initServerSocket() throws Exception{
         serverSocket = ServerSocketChannel.open();
@@ -49,11 +45,6 @@ public class NioEndpoint extends AbstractEndpoint<NioChannel, SocketChannel> {
         System.out.println("服务器监听端口"+getPort()+"成功");
     }
 
-    /**
-     * 关闭服务套接字
-     *
-     * @throws Exception 关闭过程发生错误
-     */
     @Override
     protected void doCloseServerSocket() throws Exception{
         if(Objects.nonNull(serverSocket)){
@@ -77,28 +68,23 @@ public class NioEndpoint extends AbstractEndpoint<NioChannel, SocketChannel> {
     @Override
     protected void startInternal() throws Exception {
         System.out.println("启动成功......");
+        if(Objects.isNull(getExecutor())){
+            createExecutor();
+        }
         startAcceptorThread();
         startPollerThread();
     }
 
     /**
      * 开启轮询器线程
-     *
-     * @throws Exception 开启过程发生错误
      */
     private void startPollerThread() throws Exception{
-        poller = new Poller();
+        poller = new Poller(this);
         Thread pollerThread = new Thread(poller, getName() + "-Poller");
         pollerThread.setPriority(threadPriority);
         pollerThread.setDaemon(true);
         pollerThread.start();
     }
-
-    /**
-     * 关闭服务套机字
-     *
-     * @throws Exception 关闭过程发生错误
-     */
     @Override
     protected void stopInternal() throws Exception {
         if(!running){
@@ -107,13 +93,6 @@ public class NioEndpoint extends AbstractEndpoint<NioChannel, SocketChannel> {
         }
     }
 
-    /**
-     * 获取客户端TCP连接
-     * 接受与此通道的套接字建立的连接
-     *
-     * @return  客户端套接字连接
-     * @throws Exception 接受连接过程发生错误
-     */
     @Override
     protected SocketChannel serverSocketAccept() throws Exception {
         SocketChannel channel = serverSocket.accept();
@@ -123,33 +102,21 @@ public class NioEndpoint extends AbstractEndpoint<NioChannel, SocketChannel> {
         return channel;
     }
 
-    /**
-     * 包装此套接字连接
-     *
-     * @param socket 套接字连接
-     * @return true包装成功
-     */
     @Override
     protected boolean setSocketOptions(SocketChannel socket) {
-        NioSocketWrapper socketWrapper = null;
+        NioSocketWrapper newWrapper = null;
         try {
-
-            NioChannel channel = null;
-
             SocketBufferHandler socketBufferHandler = new SocketBufferHandler(socketProperties.getAppReadBufferSize(), socketProperties.getAppWriteBufferSize());
-            channel = new NioChannel(socketBufferHandler);
-            NioSocketWrapper newWrapper = new NioSocketWrapper(channel, this);
+            NioChannel channel = new NioChannel(socketBufferHandler);
+            newWrapper = new NioSocketWrapper(channel, this);
             channel.reset(socket,newWrapper);
             connections.put(socket, newWrapper);
-            socketWrapper = newWrapper;
-
             socket.configureBlocking(false);
-            socket.register(poller.getSelector(), SelectionKey.OP_READ);
-            poller.register(socketWrapper);
+            poller.register(newWrapper);
             return true;
         }catch (Throwable throwable){
             System.out.println("endpoint.socketOptionsError"+throwable);
-            if(Objects.nonNull(socketWrapper)){
+            if(Objects.nonNull(newWrapper)){
                 destroySocket(socket);
             }
         }
@@ -157,7 +124,38 @@ public class NioEndpoint extends AbstractEndpoint<NioChannel, SocketChannel> {
     }
 
     @Override
+    protected SocketProcessorBase<NioChannel> createSocketProcessor(SocketWrapperBase<NioChannel> socketWrapper, SocketEvent socketEvent) {
+        return new NioSocketProcessor(socketWrapper, socketEvent);
+    }
+
+    @Override
     protected void destroySocket(SocketChannel socket) {
 
+    }
+    public void cancelledKey(SelectionKey sk, SocketWrapperBase<NioChannel> socketWrapper) {
+        try {
+            if (sk != null) {
+                sk.attach(null);
+                if (sk.isValid()) {
+                    sk.cancel();
+                }
+            }
+        }finally {
+            socketWrapper.close();
+        }
+    }
+    /**
+     * socket连接处理基类的具体实现类，处理轮询器的读写操作，
+     * 相当于工作线程
+     */
+    public class NioSocketProcessor extends SocketProcessorBase<NioChannel>{
+        public NioSocketProcessor(SocketWrapperBase<NioChannel> socketWrapper, SocketEvent socketEvent) {
+            super(socketWrapper, socketEvent);
+        }
+
+        @Override
+        protected void doRun() {
+            System.out.println("收到socket连接。。。。。。");
+        }
     }
 }

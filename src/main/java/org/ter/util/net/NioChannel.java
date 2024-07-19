@@ -1,6 +1,6 @@
-package org.ter.container.net;
+package org.ter.util.net;
 
-import org.ter.container.net.wrapper.NioSocketWrapper;
+import org.ter.util.net.wrapper.NioSocketWrapper;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

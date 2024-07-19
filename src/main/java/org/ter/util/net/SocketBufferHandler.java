@@ -1,4 +1,4 @@
-package org.ter.container.net;
+package org.ter.util.net;
 
 import java.nio.ByteBuffer;
 

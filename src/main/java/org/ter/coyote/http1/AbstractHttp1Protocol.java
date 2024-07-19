@@ -1,6 +1,6 @@
 package org.ter.coyote.http1;
 
-import org.ter.container.net.AbstractEndpoint;
+import org.ter.util.net.AbstractEndpoint;
 import org.ter.coyote.AbstractProtocol;
 
 public abstract class AbstractHttp1Protocol<S> extends AbstractProtocol<S> {
