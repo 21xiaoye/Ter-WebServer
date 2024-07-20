@@ -69,8 +69,7 @@ public class NioChannel implements ByteChannel, ScatteringByteChannel, Gathering
      */
     @Override
     public long write(ByteBuffer[] srcs, int offset, int length) throws IOException {
-        socketChannel.write(srcs, offset, length);
-        return 0;
+        return socketChannel.write(srcs, offset, length);
     }
 
     /**
@@ -134,7 +133,6 @@ public class NioChannel implements ByteChannel, ScatteringByteChannel, Gathering
     public boolean isOpen() {
         return socketChannel.isOpen();
     }
-
     /**
      * 关闭此通道
      *

@@ -10,7 +10,7 @@ import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.LifecycleBase;
 import org.ter.lifecycle.LifecycleState;
 import org.ter.lifecycle.MapperListener;
-import org.ter.ter_server.util.res.StringManager;
+import org.ter.util.res.StringManager;
 
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;

@@ -28,7 +28,6 @@ public class Acceptor<U> implements Runnable{
 
     @Override
     public void run() {
-        System.out.println("开始接受连接......");
         while (!stopCalled) {
             while (endpoint.isPaused() && !stopCalled) {
                 if (!ReadyState.CLOSING.equals(readyState)) {

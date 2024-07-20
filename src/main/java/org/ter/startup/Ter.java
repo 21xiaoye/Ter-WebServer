@@ -4,7 +4,7 @@ import org.ter.connector.Connector;
 import org.ter.container.*;
 import org.ter.container.core.*;
 import org.ter.exception.LifecycleException;
-import org.ter.ter_server.util.res.StringManager;
+import org.ter.util.res.StringManager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;

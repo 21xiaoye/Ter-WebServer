@@ -8,7 +8,7 @@ import org.ter.coyote.ProtocolHandler;
 import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.LifecycleBase;
 import org.ter.lifecycle.LifecycleState;
-import org.ter.ter_server.util.res.StringManager;
+import org.ter.util.res.StringManager;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

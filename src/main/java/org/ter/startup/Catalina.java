@@ -1,7 +1,7 @@
 package org.ter.startup;
 
 import org.ter.container.Server;
-import org.ter.ter_server.util.res.StringManager;
+import org.ter.util.res.StringManager;
 
 public class Catalina {
     private static final StringManager sm = StringManager.getStringManager(Catalina.class);

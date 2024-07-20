@@ -4,7 +4,7 @@ import org.ter.container.Container;
 import org.ter.container.Pipeline;
 import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.*;
-import org.ter.ter_server.util.res.StringManager;
+import org.ter.util.res.StringManager;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

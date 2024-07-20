@@ -1,7 +1,7 @@
 package org.ter.lifecycle;
 
 import org.ter.exception.LifecycleException;
-import org.ter.ter_server.util.res.StringManager;
+import org.ter.util.res.StringManager;
 
 import java.util.List;
 import java.util.Objects;

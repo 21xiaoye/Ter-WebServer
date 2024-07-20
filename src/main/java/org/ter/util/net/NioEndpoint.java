@@ -96,11 +96,7 @@ public class NioEndpoint extends AbstractEndpoint<NioChannel, SocketChannel> {
 
     @Override
     protected SocketChannel serverSocketAccept() throws Exception {
-        SocketChannel channel = serverSocket.accept();
-        if(Objects.nonNull(channel)){
-            System.out.println("有新的连接了");
-        }
-        return channel;
+        return serverSocket.accept();
     }
 
     @Override
@@ -146,27 +142,24 @@ public class NioEndpoint extends AbstractEndpoint<NioChannel, SocketChannel> {
         }
     }
     /**
-     * socket连接处理基类的具体实现类
-     * 相当于工作线程
+     * socket连接处理基类的具体实现类,工作线程
      */
     public class NioSocketProcessor extends SocketProcessorBase<NioChannel>{
         public NioSocketProcessor(SocketWrapperBase<NioChannel> socketWrapper, SocketEvent socketEvent) {
             super(socketWrapper, socketEvent);
         }
-
         @Override
         protected void doRun() {
-            System.out.println("收到socket连接。。。。。。");
             Poller poller = NioEndpoint.this.poller;
             if(Objects.isNull(poller)){
                 socketWrapper.close();
                 return;
             }
-            SocketState socketState = SocketState.OPEN;
+            SocketState socketState;
             if(Objects.isNull(socketEvent)){
-                getHandler().process(socketWrapper, SocketEvent.OPEN_READ);
+                socketState = getHandler().process(socketWrapper, SocketEvent.OPEN_READ);
             }else{
-                getHandler().process(socketWrapper, socketEvent);
+                socketState = getHandler().process(socketWrapper, socketEvent);
             }
             if(SocketState.CLOSED.equals(socketState)){
                 poller.getEndpoint().cancelledKey(getSelectionKey(), socketWrapper);
@@ -174,10 +167,9 @@ public class NioEndpoint extends AbstractEndpoint<NioChannel, SocketChannel> {
         }
         private SelectionKey getSelectionKey() {
             SocketChannel socketChannel = socketWrapper.getSocket().getSocketChannel();
-            if (socketChannel == null) {
+            if (Objects.isNull(socketChannel)) {
                 return null;
             }
-
             return socketChannel.keyFor(NioEndpoint.this.poller.getSelector());
         }
     }

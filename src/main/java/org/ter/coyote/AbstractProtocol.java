@@ -1,7 +1,7 @@
 package org.ter.coyote;
 
 import org.ter.util.net.AbstractEndpoint;
-import org.ter.ter_server.util.res.StringManager;
+import org.ter.util.res.StringManager;
 import org.ter.util.net.ConnectionHandler;
 import org.ter.util.net.Handler;
 
@@ -49,6 +49,12 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler{
         System.out.println("开始启动协议处理器......");
         endpoint.start();
     }
+
+    /**
+     * 为当前协议配置新的Processor实例
+     * @return 新的Processor实例
+     */
+    public abstract Processor createProcessor();
 }
 
 

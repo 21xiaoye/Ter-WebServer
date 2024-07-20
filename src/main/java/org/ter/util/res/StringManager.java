@@ -1,4 +1,4 @@
-package org.ter.ter_server.util.res;
+package org.ter.util.res;
 
 import java.text.MessageFormat;
 import java.util.*;

@@ -1,7 +1,7 @@
 package org.ter.util.net;
 
 import org.ter.util.net.wrapper.SocketWrapperBase;
-import org.ter.ter_server.util.res.StringManager;
+import org.ter.util.res.StringManager;
 
 import java.net.InetAddress;
 import java.nio.channels.SocketChannel;
@@ -52,17 +52,21 @@ public abstract class AbstractEndpoint <S,U>{
      * 工作线程优先级
      */
     protected int threadPriority = Thread.NORM_PRIORITY;
+    /**
+     * 线程池
+     */
     private Executor executor = null;
+    /**
+     * 连接处理程序
+     */
     private Handler<S> handler = null;
 
     public Handler<S> getHandler() {
         return handler;
     }
-
     public void setHandler(Handler<S> handler) {
         this.handler = handler;
     }
-
     public void setExecutor(Executor executor) {
         this.executor = executor;
     }
@@ -225,7 +229,7 @@ public abstract class AbstractEndpoint <S,U>{
      */
     protected abstract SocketChannel serverSocketAccept() throws Exception;
     /**
-     * 包装此套接字连接吗，当客户端建立连接时，服务套接字接受连接，
+     * 包装此套接字连接，当客户端建立连接时，服务套接字接受连接，
      * 并调用此方法，将SocketChannel封装
      *
      * @param socket 客户端套接字
