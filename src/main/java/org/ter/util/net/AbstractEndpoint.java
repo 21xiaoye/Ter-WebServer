@@ -53,6 +53,16 @@ public abstract class AbstractEndpoint <S,U>{
      */
     protected int threadPriority = Thread.NORM_PRIORITY;
     private Executor executor = null;
+    private Handler<S> handler = null;
+
+    public Handler<S> getHandler() {
+        return handler;
+    }
+
+    public void setHandler(Handler<S> handler) {
+        this.handler = handler;
+    }
+
     public void setExecutor(Executor executor) {
         this.executor = executor;
     }
@@ -171,7 +181,6 @@ public abstract class AbstractEndpoint <S,U>{
     protected void closeSocket(U socket){
         // 关闭套接字
     }
-
 
     /**
      * 销毁关闭客户端套接字连接

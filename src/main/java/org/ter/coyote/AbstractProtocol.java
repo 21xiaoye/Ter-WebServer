@@ -2,6 +2,8 @@ package org.ter.coyote;
 
 import org.ter.util.net.AbstractEndpoint;
 import org.ter.ter_server.util.res.StringManager;
+import org.ter.util.net.ConnectionHandler;
+import org.ter.util.net.Handler;
 
 public abstract class AbstractProtocol<S> implements ProtocolHandler{
     private static final StringManager sm = StringManager.getStringManager(AbstractProtocol.class);
@@ -9,8 +11,12 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler{
      * 底层网络的I/O端点
      */
     private final AbstractEndpoint<S,?> endpoint;
+    private Handler<S> handler;
     public AbstractProtocol(AbstractEndpoint<S, ?> endpoint){
         this.endpoint = endpoint;
+        ConnectionHandler<S> cHandler = new ConnectionHandler<>(this);
+        setHandler(cHandler);
+        getEndpoint().setHandler(cHandler);
     }
 
     protected AbstractEndpoint<S,?> getEndpoint(){
@@ -24,6 +30,13 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler{
         endpoint.setPort(port);
     }
 
+    public Handler<S> getHandler() {
+        return handler;
+    }
+
+    public void setHandler(Handler<S> handler) {
+        this.handler = handler;
+    }
 
     @Override
     public void init() throws Exception {

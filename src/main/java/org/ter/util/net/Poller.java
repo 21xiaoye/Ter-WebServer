@@ -32,6 +32,9 @@ public class Poller implements Runnable{
     public Selector getSelector() {
         return selector;
     }
+    public NioEndpoint getEndpoint() {
+        return endpoint;
+    }
 
     @Override
     public void run() {

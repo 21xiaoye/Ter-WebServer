@@ -1,5 +1,6 @@
 package org.ter.util.net;
 
+import org.ter.coyote.SocketState;
 import org.ter.util.net.wrapper.NioSocketWrapper;
 import org.ter.util.net.wrapper.SocketWrapperBase;
 
@@ -145,7 +146,7 @@ public class NioEndpoint extends AbstractEndpoint<NioChannel, SocketChannel> {
         }
     }
     /**
-     * socket连接处理基类的具体实现类，处理轮询器的读写操作，
+     * socket连接处理基类的具体实现类
      * 相当于工作线程
      */
     public class NioSocketProcessor extends SocketProcessorBase<NioChannel>{
@@ -156,6 +157,28 @@ public class NioEndpoint extends AbstractEndpoint<NioChannel, SocketChannel> {
         @Override
         protected void doRun() {
             System.out.println("收到socket连接。。。。。。");
+            Poller poller = NioEndpoint.this.poller;
+            if(Objects.isNull(poller)){
+                socketWrapper.close();
+                return;
+            }
+            SocketState socketState = SocketState.OPEN;
+            if(Objects.isNull(socketEvent)){
+                getHandler().process(socketWrapper, SocketEvent.OPEN_READ);
+            }else{
+                getHandler().process(socketWrapper, socketEvent);
+            }
+            if(SocketState.CLOSED.equals(socketState)){
+                poller.getEndpoint().cancelledKey(getSelectionKey(), socketWrapper);
+            }
+        }
+        private SelectionKey getSelectionKey() {
+            SocketChannel socketChannel = socketWrapper.getSocket().getSocketChannel();
+            if (socketChannel == null) {
+                return null;
+            }
+
+            return socketChannel.keyFor(NioEndpoint.this.poller.getSelector());
         }
     }
 }
