@@ -21,8 +21,17 @@ public abstract class AbstractProcessor extends AbstractProcessorLight{
     public Adapter getAdapter() {
         return adapter;
     }
+
+    public void setAdapter(Adapter adapter) {
+        this.adapter = adapter;
+    }
+
     @Override
     public Request getRequest() {
         return request;
+    }
+
+    protected void setSocketWrapper(SocketWrapperBase<?> socketWrapper) {
+        this.socketWrapper = socketWrapper;
     }
 }

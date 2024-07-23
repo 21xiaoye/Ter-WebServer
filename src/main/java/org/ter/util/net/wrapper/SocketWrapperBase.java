@@ -8,6 +8,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Socket封装基类
+ * @param <E> 底层Socket通道类型
+ */
 public abstract class SocketWrapperBase <E>{
     private E socket;
     private final AbstractEndpoint<E,?> endpoint;
@@ -23,9 +27,7 @@ public abstract class SocketWrapperBase <E>{
     /**
      * 此Socket包装器相关联的Processor实例，
      * 只有在{@link org.ter.util.net.Handler#process(SocketWrapperBase, SocketEvent)}
-     * 中对其进行填充
-     *
-     * Processor实例
+     * 中对其进行填充Processor实例
      */
     private final AtomicReference<Object> currentProcessor = new AtomicReference<>();
     public SocketWrapperBase(E socket, AbstractEndpoint<E, ?> endpoint){

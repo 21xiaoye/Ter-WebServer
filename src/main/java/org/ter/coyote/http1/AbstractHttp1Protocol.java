@@ -11,6 +11,8 @@ public abstract class AbstractHttp1Protocol<S> extends AbstractProtocol<S> {
 
     @Override
     public Processor createProcessor() {
-        return null;
+        Http1Processor http1Processor = new Http1Processor(this, getEndpoint());
+        http1Processor.setAdapter(getAdapter());
+        return http1Processor;
     }
 }

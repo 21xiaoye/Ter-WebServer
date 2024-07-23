@@ -4,9 +4,6 @@ import org.ter.util.net.NioChannel;
 import org.ter.util.net.NioEndpoint;
 import org.ter.util.net.Poller;
 
-/**
- * 封装底层Nio套接字
- */
 public class NioSocketWrapper extends SocketWrapperBase<NioChannel> {
     private final Poller poller;
     private int interestOps = 0;
@@ -19,7 +16,6 @@ public class NioSocketWrapper extends SocketWrapperBase<NioChannel> {
         poller = endpoint.getPoller();
         readLock = new Object();
         writeLock = new Object();
-//        this.poller = poller;
     }
     public Poller getPoller() {
         return poller;
