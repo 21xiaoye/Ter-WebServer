@@ -6,8 +6,8 @@ import org.ter.util.net.wrapper.SocketWrapperBase;
 public abstract class AbstractProcessor extends AbstractProcessorLight{
     protected Adapter adapter;
     protected AbstractEndpoint<?,?> endpoint;
-    private final Request request;
-    private final Response response;
+    protected final Request request;
+    protected final Response response;
     protected volatile SocketWrapperBase<?> socketWrapper;
     public AbstractProcessor(AbstractEndpoint<?,?> endpoint){
         this(endpoint, new Request(), new Response());

@@ -18,4 +18,7 @@ public class Http1InputBuffer implements InputBuffer {
         this.activeFilters = new InputFilter[0];
         this.lastFilter = -1;
     }
+    public void init(SocketWrapperBase<?> socketWrapper){
+        this.socketWrapper = socketWrapper;
+    }
 }

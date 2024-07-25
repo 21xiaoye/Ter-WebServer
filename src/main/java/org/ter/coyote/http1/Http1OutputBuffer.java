@@ -54,4 +54,7 @@ public class Http1OutputBuffer implements OutputBuffer {
             return 0;
         }
     }
+    public void init(SocketWrapperBase<?> socketWrapper){
+        this.socketWrapper = socketWrapper;
+    }
 }

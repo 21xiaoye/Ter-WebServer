@@ -22,7 +22,7 @@ public abstract class AbstractProcessorLight implements Processor{
     }
 
     /**
-     * 处理标准的 HTTP 请求，完全读取标头后，在有新的 HTTP 请求要处理之前，不会再次调用此方法。
+     * 处理标准的 HTTP 请求，完全读取标头后，在有新的 HTTP 请求要处理之前，将不会再次调用此方法。
      * 在处理过程中，请求类型可能会更改，这可能会导致对 dispatch(SocketEvent)的一个或多个调用，
      *
      * @param socketWrapper 此处理过程的连接
