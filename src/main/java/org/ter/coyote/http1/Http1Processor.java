@@ -19,15 +19,18 @@ public class Http1Processor extends AbstractProcessor {
     public Http1Processor(AbstractHttp1Protocol<?> protocol,AbstractEndpoint<?, ?> endpoint) {
         super(endpoint);
         this.protocol = protocol;
-        this.inputBuffer = new Http1InputBuffer(request);
+        this.inputBuffer = new Http1InputBuffer(request, protocol.getMaxHttpHeaderSize());
         this.outputBuffer = new Http1OutputBuffer(response,protocol.getMaxHttpResponseHeaderSize());
     }
 
     @Override
     protected SocketState service(SocketWrapperBase<?> socketWrapper) throws IOException {
         setSocketWrapper(socketWrapper);
+        System.out.println("------------->");
         while (keepAlive && !endpoint.isPaused()){
-
+            if(!inputBuffer.parseRequestLine()){
+                break;
+            }
         }
         return null;
     }

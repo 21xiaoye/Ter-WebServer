@@ -4,6 +4,9 @@ import org.ter.util.net.NioChannel;
 import org.ter.util.net.NioEndpoint;
 import org.ter.util.net.Poller;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
 public class NioSocketWrapper extends SocketWrapperBase<NioChannel> {
     private final Poller poller;
     private int interestOps = 0;
@@ -27,4 +30,9 @@ public class NioSocketWrapper extends SocketWrapperBase<NioChannel> {
     }
 
     public int interestOps(int ops) { this.interestOps  = ops; return ops; }
+
+    @Override
+    public int read(ByteBuffer to) throws IOException {
+        return getSocket().read(to);
+    }
 }

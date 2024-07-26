@@ -4,6 +4,8 @@ import org.ter.util.net.AbstractEndpoint;
 import org.ter.util.net.SocketBufferHandler;
 import org.ter.util.net.SocketEvent;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -46,6 +48,16 @@ public abstract class SocketWrapperBase <E>{
     public Object takeCurrentProcessor(){
         return currentProcessor.getAndSet(null);
     }
+
+    public SocketBufferHandler getSocketBufferHandler() {
+        return socketBufferHandler;
+    }
+
+    public void setSocketBufferHandler(SocketBufferHandler socketBufferHandler) {
+        this.socketBufferHandler = socketBufferHandler;
+    }
+
     public void close() {
     }
+    public abstract int read(ByteBuffer to) throws IOException;
 }
