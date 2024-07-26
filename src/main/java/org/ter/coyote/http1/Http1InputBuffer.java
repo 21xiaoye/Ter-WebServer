@@ -72,7 +72,6 @@ public class Http1InputBuffer implements InputBuffer {
             }
         }
         if (nRead > 0) {
-            System.out.println(nRead);
             return true;
         } else {
             return false;

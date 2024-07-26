@@ -26,7 +26,6 @@ public class Http1Processor extends AbstractProcessor {
     @Override
     protected SocketState service(SocketWrapperBase<?> socketWrapper) throws IOException {
         setSocketWrapper(socketWrapper);
-        System.out.println("------------->");
         while (keepAlive && !endpoint.isPaused()){
             if(!inputBuffer.parseRequestLine()){
                 break;

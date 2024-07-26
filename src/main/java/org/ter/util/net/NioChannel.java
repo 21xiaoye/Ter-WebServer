@@ -159,4 +159,8 @@ public class NioChannel implements ByteChannel, ScatteringByteChannel, Gathering
     public SocketChannel getSocketChannel() {
         return socketChannel;
     }
+
+    public SocketBufferHandler getBufferHandler() {
+        return bufferHandler;
+    }
 }
