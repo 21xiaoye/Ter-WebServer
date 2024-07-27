@@ -121,7 +121,9 @@ public class NioChannel implements ByteChannel, ScatteringByteChannel, Gathering
      */
     @Override
     public int read(ByteBuffer dst) throws IOException {
-        return socketChannel.read(dst);
+        dst.clear();
+        int read = socketChannel.read(dst);
+        return read;
     }
 
     /**

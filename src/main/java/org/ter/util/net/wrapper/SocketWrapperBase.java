@@ -60,4 +60,5 @@ public abstract class SocketWrapperBase <E>{
     public void close() {
     }
     public abstract int read(ByteBuffer to) throws IOException;
+    public abstract int write(ByteBuffer to) throws IOException;
 }

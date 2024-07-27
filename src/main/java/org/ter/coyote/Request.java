@@ -3,6 +3,10 @@ package org.ter.coyote;
 import java.nio.charset.Charset;
 
 public final class Request {
+    public enum Type{
+        METHOD_MB,PROTO_MB,URI_MB,QUERY_MB
+    }
+    private long startTime = -1;
     private int ServerPort = -1;
     private int localPort = -1;
     private int remotePort = -1;
@@ -27,6 +31,13 @@ public final class Request {
     public Request() {
     }
 
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
     public int getServerPort() {
         return ServerPort;
     }
@@ -169,5 +180,36 @@ public final class Request {
 
     public void setCharset(Charset charset) {
         this.charset = charset;
+    }
+    public void setStrVal(Type type, byte[] bytes, int start, int end){
+        byte[] subArray = new byte[end - start];
+        System.arraycopy(bytes, start, subArray, 0, end - start);
+        setStrVal(type, subArray);
+    }
+    public void setStrVal(Type type, byte[] bytes){
+        setStrVal(type, new String(bytes));
+    }
+    public void setStrVal(Type type,String strVal){
+        switch (type){
+            case METHOD_MB -> {
+                setMethodMB(strVal);
+                break;
+            }
+            case PROTO_MB -> {
+                setProtoMB(strVal);
+                break;
+            }
+            case URI_MB -> {
+                setUriMB(strVal);
+                break;
+            }
+            case QUERY_MB -> {
+                setQueryMB(strVal);
+                break;
+            }
+            default -> {
+                // 抛出异常
+            }
+        }
     }
 }

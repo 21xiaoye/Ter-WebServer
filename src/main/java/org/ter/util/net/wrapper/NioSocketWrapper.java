@@ -36,4 +36,9 @@ public class NioSocketWrapper extends SocketWrapperBase<NioChannel> {
     public int read(ByteBuffer to) throws IOException {
         return getSocket().read(to);
     }
+
+    @Override
+    public int write(ByteBuffer to) throws IOException {
+        return getSocket().write(to);
+    }
 }

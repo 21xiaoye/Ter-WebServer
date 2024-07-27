@@ -15,5 +15,5 @@ public interface OutputBuffer {
      * @return 写入的字节数
      * @throws IOException 在写入到响应的过程当中发生错误
      */
-    public int doWrite(ByteBuffer buffer) throws IOException;
+    int doWrite(ByteBuffer buffer) throws IOException;
 }
