@@ -19,10 +19,9 @@ public class Http1InputBuffer implements InputBuffer {
     private int lastFilter;
     private ByteBuffer byteBuffer;
     private volatile boolean parsingRequestLine;
-    private int parsingRequestLineStart;
     private final int headerBufferSize;
-    private byte chr;
-
+    private byte chr = Constants.ZERO;
+    private byte prev = Constants.ZERO;
     public Http1InputBuffer(Request request, int headerBufferSize) {
         this.request = request;
         this.filterLibrary = new InputFilter[0];
@@ -30,8 +29,6 @@ public class Http1InputBuffer implements InputBuffer {
         this.lastFilter = -1;
         this.parsingRequestLine = true;
         this.headerBufferSize = headerBufferSize;
-        this.chr = 0;
-        this.parsingRequestLineStart = 0;
     }
 
     /**
@@ -57,21 +54,11 @@ public class Http1InputBuffer implements InputBuffer {
         if (!parsingRequestLine) {
             return true;
         }
-        if (!f()) return false;
-            
-        boolean space = false;
-        int pos = 0;
-        while (!space) {
-            pos = byteBuffer.position();
-            chr = byteBuffer.get();
-            if (chr == Constants.CR || chr == Constants.LF) {
-                space = true;
-            }
-        }
+        if (!skipStartCRLF()) return false;
         try {
             // 获取请求行
-            String line = readLine(byteBuffer, 0, pos - parsingRequestLineStart);
-            String[] split = line.split(Constants.SPLIT,3);
+            String line = readStringLine();
+            String[] split = line.split(Constants.SP_STR,3);
             int querySplitIndex = split[1].indexOf(Constants.QUESTION);
             if(split.length != 3){
                 return false;
@@ -87,12 +74,11 @@ public class Http1InputBuffer implements InputBuffer {
             request.setStrVal(Request.Type.PROTO_MB, split[2]);
         }finally {
             parsingRequestLine = false;
-            parsingRequestLineStart = byteBuffer.position();
         }
         return true;
     }
 
-    private boolean f() throws IOException {
+    private boolean skipStartCRLF() throws IOException {
         do {
             if (!read()) {
                 return false;
@@ -103,11 +89,31 @@ public class Http1InputBuffer implements InputBuffer {
             chr = byteBuffer.get();
         } while (chr == Constants.CR || chr == Constants.LF);
         byteBuffer = byteBuffer.position(byteBuffer.position() - 1);
-        parsingRequestLineStart = byteBuffer.position();
         return true;
     }
-    private String readLine(ByteBuffer buffer, int start, int end){
-        return Objects.isNull(buffer) ? null : CharsetFunctions.stringAscii(buffer.array(), start, end);
+    private String readStringLine(){
+        ByteBuffer buffer = readLine(byteBuffer);
+        return Objects.isNull(buffer) ? null : CharsetFunctions.stringAscii(buffer.array(), 0, buffer.limit());
+    }
+    private ByteBuffer readLine(ByteBuffer buffer){
+        ByteBuffer allocate = ByteBuffer.allocate(buffer.remaining());
+        while (buffer.hasRemaining()){
+            prev = chr;
+            chr = buffer.get();
+            allocate.put(chr);
+            if((prev== Constants.CR && chr == Constants.LF)){
+                allocate.limit(allocate.position()-2);
+                allocate.position(0);
+                return allocate;
+            }
+        }
+        // 避免因为没有完整的 "CRLF" 而无法读取最后一行
+        if (allocate.position() > 0) {
+            allocate.limit(allocate.position());
+            allocate.position(0);
+            return allocate;
+        }
+        return null;
     }
     @Override
     public boolean read() throws IOException {
@@ -130,7 +136,20 @@ public class Http1InputBuffer implements InputBuffer {
      * @return true解析成功，false 解析失败
      * @throws IOException 在解析过程当中发生I/O错误
      */
-    public boolean parseHeaders() throws IOException{
+    public boolean parseHeaders() {
+        String line;
+        while (Objects.nonNull(line = readStringLine()) && !line.isEmpty() && line.getBytes().length != 0){
+            String[] pair = line.split(Constants.COLON_STR, 2);
+            if(pair.length !=2){
+                return false;
+            }
+            if(request.hasFieldValue(pair[0])){
+                request.putHeader(pair[0],
+                        request.getFieldValue(pair[0] +Constants.SEMI_COLON_STR+pair[1].replaceFirst(Constants.CARET_PLUS,Constants.EMPTY)));
+            }else {
+                request.putHeader(pair[0], pair[1].replaceFirst(Constants.CARET_PLUS, Constants.EMPTY));
+            }
+        }
         return true;
     }
 }

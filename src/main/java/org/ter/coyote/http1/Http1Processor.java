@@ -2,10 +2,13 @@ package org.ter.coyote.http1;
 
 import org.ter.coyote.AbstractProcessor;
 import org.ter.coyote.SocketState;
+import org.ter.exception.InvalidDataException;
 import org.ter.util.net.AbstractEndpoint;
 import org.ter.util.net.wrapper.SocketWrapperBase;
 
+
 import java.io.IOException;
+
 
 public class Http1Processor extends AbstractProcessor {
     private final AbstractHttp1Protocol<?> protocol;
@@ -32,7 +35,7 @@ public class Http1Processor extends AbstractProcessor {
                 if (!inputBuffer.parseRequestLineSplit()) {
                     return SocketState.UPGRADING;
                 }
-                if(!endpoint.isPaused()){
+                if(endpoint.isPaused()){
                     response.setStatus(503);
                 }else{
                     // 解析 HTTP 请求头
@@ -41,7 +44,9 @@ public class Http1Processor extends AbstractProcessor {
                     }
                 }
                 getAdapter().service(request,response);
-            }catch (Throwable throwable){
+            }catch (InvalidDataException exception){
+                
+            } catch (Throwable throwable){
                 response.setStatus(400);
             }
         }

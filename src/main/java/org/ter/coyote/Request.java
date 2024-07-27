@@ -240,4 +240,14 @@ public final class Request {
         }
         return headerValue;
     }
+    public boolean hasFieldValue(String name) {
+        return headersMap.containsKey(name);
+    }
+    public String getFieldValue(String name) {
+        String value = headersMap.get(name);
+        if(value  == null){
+            return "";
+        }
+        return value;
+    }
 }

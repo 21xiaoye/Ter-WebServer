@@ -4,7 +4,9 @@ import org.ter.util.net.NioChannel;
 import org.ter.util.net.NioEndpoint;
 import org.ter.util.net.Poller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 
 public class NioSocketWrapper extends SocketWrapperBase<NioChannel> {
@@ -36,7 +38,6 @@ public class NioSocketWrapper extends SocketWrapperBase<NioChannel> {
     public int read(ByteBuffer to) throws IOException {
         return getSocket().read(to);
     }
-
     @Override
     public int write(ByteBuffer to) throws IOException {
         return getSocket().write(to);

@@ -49,7 +49,12 @@ public final class Constants {
      * SP.
      */
     public static final byte SP = (byte) ' ';
-    public static final String SPLIT = " ";
+    public static final String SP_STR = " ";
+
+    /**
+     * EMPTY
+     */
+    public static final String EMPTY = "";
 
 
     /**
@@ -62,18 +67,28 @@ public final class Constants {
      * COLON.
      */
     public static final byte COLON = (byte) ':';
+    public static final String COLON_STR = ":";
 
 
     /**
      * SEMI_COLON.
      */
     public static final byte SEMI_COLON = (byte) ';';
+    public static final String SEMI_COLON_STR = ";";
 
+    /**
+     * CARET_PLUS
+     */
+    public static final String CARET_PLUS = "^ +";
 
     /**
      * 'A'.
      */
     public static final byte A = (byte) 'A';
+    /**
+     * '0'
+     */
+    public static final byte ZERO = (byte) '0';
 
 
     /**
