@@ -4,12 +4,11 @@ import org.ter.coyote.InputBuffer;
 import org.ter.coyote.Request;
 import org.ter.coyote.http1.filter.InputFilter;
 import org.ter.coyote.http1.filter.OutputFilter;
-import org.ter.exception.InvalidDataException;
+import org.ter.util.buf.CharsetFunctions;
 import org.ter.util.net.wrapper.SocketWrapperBase;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Objects;
 
 public class Http1InputBuffer implements InputBuffer {
@@ -35,6 +34,11 @@ public class Http1InputBuffer implements InputBuffer {
         this.parsingRequestLineStart = 0;
     }
 
+    /**
+     * 初始化缓冲区
+     *
+     * @param socketWrapper 缓冲区需要关联的SocketWrapper对象
+     */
     public void init(SocketWrapperBase<?> socketWrapper) {
         this.socketWrapper = socketWrapper;
         int bufLength = headerBufferSize + socketWrapper.getSocketBufferHandler().getReadBuffer().capacity();
@@ -66,13 +70,11 @@ public class Http1InputBuffer implements InputBuffer {
         }
         try {
             // 获取请求行
-            byte[] subArray = new byte[pos - parsingRequestLineStart];
-            System.arraycopy(byteBuffer.array(), parsingRequestLineStart, subArray, 0, pos - parsingRequestLineStart);
-            String line = new String(subArray);
+            String line = readLine(byteBuffer, 0, pos - parsingRequestLineStart);
             String[] split = line.split(Constants.SPLIT,3);
             int querySplitIndex = split[1].indexOf(Constants.QUESTION);
             if(split.length != 3){
-                //TODO: 这里收到无效的HTTP请求，需要返回错误信息
+                return false;
             }
             // 请求路径携带参数
             if(querySplitIndex > 0){
@@ -85,7 +87,7 @@ public class Http1InputBuffer implements InputBuffer {
             request.setStrVal(Request.Type.PROTO_MB, split[2]);
         }finally {
             parsingRequestLine = false;
-            parsingRequestLineStart = 0;
+            parsingRequestLineStart = byteBuffer.position();
         }
         return true;
     }
@@ -104,10 +106,12 @@ public class Http1InputBuffer implements InputBuffer {
         parsingRequestLineStart = byteBuffer.position();
         return true;
     }
-
+    private String readLine(ByteBuffer buffer, int start, int end){
+        return Objects.isNull(buffer) ? null : CharsetFunctions.stringAscii(buffer.array(), start, end);
+    }
     @Override
     public boolean read() throws IOException {
-        int nRead = -1;
+        int nRead;
         int mark = byteBuffer.position();
         try {
             nRead = socketWrapper.read(byteBuffer);
@@ -118,10 +122,15 @@ public class Http1InputBuffer implements InputBuffer {
                 byteBuffer.limit(0).position(0);
             }
         }
-        if (nRead > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return nRead > 0;
+    }
+
+    /**
+     * 解析 HTTP 请求头
+     * @return true解析成功，false 解析失败
+     * @throws IOException 在解析过程当中发生I/O错误
+     */
+    public boolean parseHeaders() throws IOException{
+        return true;
     }
 }

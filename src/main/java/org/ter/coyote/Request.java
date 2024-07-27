@@ -1,6 +1,9 @@
 package org.ter.coyote;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.TreeMap;
 
 public final class Request {
     public enum Type{
@@ -12,10 +15,22 @@ public final class Request {
     private int remotePort = -1;
     private  String serverNameMB;
     private  String schemeMB;
+    /**
+     * HTTP 请求类型 GET、POST......
+     */
     private  String methodMB;
+    /**
+     * HTTP 请求路径
+     */
     private  String uriMB;
     private  String decodedUriMB;
+    /**
+     * HTTP 请求参数
+     */
     private  String queryMB;
+    /**
+     * HTTP 请求协议
+     */
     private  String protoMB;
 
     // 远程地址和主机
@@ -27,8 +42,13 @@ public final class Request {
     private Response response;
     private Charset charset = null;
     private String characterEncoding = null;
+    /**
+     * HTTP 请求头信息
+     */
+    private TreeMap<String, String> headersMap;
 
     public Request() {
+        headersMap = new TreeMap<>();
     }
 
     public long getStartTime() {
@@ -182,12 +202,10 @@ public final class Request {
         this.charset = charset;
     }
     public void setStrVal(Type type, byte[] bytes, int start, int end){
-        byte[] subArray = new byte[end - start];
-        System.arraycopy(bytes, start, subArray, 0, end - start);
-        setStrVal(type, subArray);
+        setStrVal(type, new String(bytes, start, end, StandardCharsets.US_ASCII));
     }
     public void setStrVal(Type type, byte[] bytes){
-        setStrVal(type, new String(bytes));
+        setStrVal(type, new String(bytes, StandardCharsets.US_ASCII));
     }
     public void setStrVal(Type type,String strVal){
         switch (type){
@@ -211,5 +229,15 @@ public final class Request {
                 // 抛出异常
             }
         }
+    }
+    public void putHeader(String name, String value){
+        headersMap.put(name, value);
+    }
+    public String getHeader(String name){
+        String headerValue = headersMap.get(name);
+        if(Objects.isNull(headerValue)){
+            return null;
+        }
+        return headerValue;
     }
 }

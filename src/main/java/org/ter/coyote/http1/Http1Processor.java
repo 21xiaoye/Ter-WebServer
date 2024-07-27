@@ -27,8 +27,22 @@ public class Http1Processor extends AbstractProcessor {
     protected SocketState service(SocketWrapperBase<?> socketWrapper) throws IOException {
         setSocketWrapper(socketWrapper);
         while (keepAlive && !endpoint.isPaused()){
-            if(!inputBuffer.parseRequestLineSplit()){
-                break;
+            try {
+                // 解析 HTTP 请求行
+                if (!inputBuffer.parseRequestLineSplit()) {
+                    return SocketState.UPGRADING;
+                }
+                if(!endpoint.isPaused()){
+                    response.setStatus(503);
+                }else{
+                    // 解析 HTTP 请求头
+                    if(!inputBuffer.parseHeaders()){
+                        break;
+                    }
+                }
+                getAdapter().service(request,response);
+            }catch (Throwable throwable){
+                response.setStatus(400);
             }
         }
         return null;
