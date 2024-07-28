@@ -82,6 +82,7 @@ public class Poller implements Runnable{
      */
     protected void processKey(SelectionKey selectionKey, NioSocketWrapper socketWrapper) throws Exception {
         if(selectionKey.isValid()){
+            unreg(selectionKey, socketWrapper, selectionKey.readyOps());
             boolean closeSocket = false;
             if(selectionKey.isReadable()){
                 if(!endpoint.processSocket(socketWrapper, SocketEvent.OPEN_READ,true)){
