@@ -151,7 +151,7 @@ public abstract class AbstractEndpoint <S,U>{
      * @param socketEvent       要处理的套接字事件
      * @param dispatch          是否交给新容器线程上执行操作
      *
-     * @return 已成功处理
+     * @return true已成功提交给工作线程
      */
     public boolean processSocket(SocketWrapperBase<S> socketWrapper, SocketEvent socketEvent, boolean dispatch){
         if(Objects.isNull(socketWrapper)){

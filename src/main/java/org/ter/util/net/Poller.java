@@ -1,6 +1,7 @@
 package org.ter.util.net;
 
 import org.ter.util.net.wrapper.NioSocketWrapper;
+import org.ter.util.net.wrapper.SocketWrapperBase;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
@@ -75,14 +76,13 @@ public class Poller implements Runnable{
 
     /**
      * 主要用来处理socket连接的读写
-     *
-     * @param selectionKey   选择器密钥
+     * @param selectionKey   选择器键
      * @param socketWrapper  socket连接封装器
      * @throws Exception
      */
     protected void processKey(SelectionKey selectionKey, NioSocketWrapper socketWrapper) throws Exception {
         if(selectionKey.isValid()){
-            unreg(selectionKey, socketWrapper, selectionKey.readyOps());
+            unReg(selectionKey, socketWrapper, selectionKey.readyOps());
             boolean closeSocket = false;
             if(selectionKey.isReadable()){
                 if(!endpoint.processSocket(socketWrapper, SocketEvent.OPEN_READ,true)){
@@ -141,8 +141,12 @@ public class Poller implements Runnable{
         return result;
     }
 
-    protected void unreg(SelectionKey sk, NioSocketWrapper socketWrapper, int readyOps) {
-        // This is a must, so that we don't have multiple threads messing with the socket
+    /**
+     * 防止多个线程重复执行套接字事件。<br/>
+     * 例:此时一个Socket被注册到选择器上，为SelectionKey.OP_READ，这时候需要将其交提交给工作线程进行处理，
+     * 这时候改变选择键标记，防止多个线程重复执行。
+     */
+    protected void unReg(SelectionKey sk, NioSocketWrapper socketWrapper, int readyOps) {
         reg(sk, socketWrapper, sk.interestOps() & (~readyOps));
     }
 
