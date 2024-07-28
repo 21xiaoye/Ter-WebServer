@@ -9,7 +9,7 @@ import java.io.IOException;
  * 协议处理器通用接口，是连接器三大组件之一，与{@link org.ter.util.net.AbstractEndpoint}
  * 抽象成{@link ProtocolHandler}
  * 主要作用是接受EndPoint组件的Socket包装器，对其进行处理，
- * 并转为{@link Request} 对象，交给适配器{@link Adapter}进行处理
+ * 并转为{@link CoyoteRequest} 对象，交给适配器{@link Adapter}进行处理
  */
 public interface Processor {
     /**
@@ -27,5 +27,5 @@ public interface Processor {
      *
      * @return 返回与此处理器相关的请求
      */
-    Request getRequest();
+    CoyoteRequest getRequest();
 }

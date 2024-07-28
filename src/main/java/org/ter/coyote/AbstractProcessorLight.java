@@ -11,7 +11,7 @@ public abstract class AbstractProcessorLight implements Processor{
         SocketState state = SocketState.CLOSED;
         do{
             if(SocketEvent.OPEN_READ.equals(socketEvent)){
-                service(socketWrapper);
+                state = service(socketWrapper);
             }else if(SocketEvent.OPEN_WRITE.equals(socketEvent)){
                 state = SocketState.LONG;
             }else{

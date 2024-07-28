@@ -1,9 +1,7 @@
-package org.ter.coyote.http1;
+package org.ter.coyote.http11;
 
 import org.ter.coyote.InputBuffer;
-import org.ter.coyote.Request;
-import org.ter.coyote.http1.filter.InputFilter;
-import org.ter.coyote.http1.filter.OutputFilter;
+import org.ter.coyote.CoyoteRequest;
 import org.ter.util.buf.CharsetFunctions;
 import org.ter.util.net.wrapper.SocketWrapperBase;
 
@@ -11,22 +9,16 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
-public class Http1InputBuffer implements InputBuffer {
-    protected Request request;
+public class Http11InputBuffer implements InputBuffer {
+    protected CoyoteRequest request;
     protected SocketWrapperBase<?> socketWrapper;
-    protected OutputFilter[] filterLibrary;
-    protected OutputFilter[] activeFilters;
-    private int lastFilter;
     private ByteBuffer byteBuffer;
     private volatile boolean parsingRequestLine;
     private final int headerBufferSize;
     private byte chr = Constants.ZERO;
     private byte prev = Constants.ZERO;
-    public Http1InputBuffer(Request request, int headerBufferSize) {
+    public Http11InputBuffer(CoyoteRequest request, int headerBufferSize) {
         this.request = request;
-        this.filterLibrary = new InputFilter[0];
-        this.activeFilters = new InputFilter[0];
-        this.lastFilter = -1;
         this.parsingRequestLine = true;
         this.headerBufferSize = headerBufferSize;
     }
@@ -65,13 +57,13 @@ public class Http1InputBuffer implements InputBuffer {
             }
             // 请求路径携带参数
             if(querySplitIndex > 0){
-                request.setStrVal(Request.Type.URI_MB, split[1].substring(0, querySplitIndex));
-                request.setStrVal(Request.Type.QUERY_MB, split[1].substring(querySplitIndex + 1));
+                request.setStrVal(CoyoteRequest.Type.URI_MB, split[1].substring(0, querySplitIndex));
+                request.setStrVal(CoyoteRequest.Type.QUERY_MB, split[1].substring(querySplitIndex + 1));
             }else{
-                request.setStrVal(Request.Type.URI_MB, split[1]);
+                request.setStrVal(CoyoteRequest.Type.URI_MB, split[1]);
             }
-            request.setStrVal(Request.Type.METHOD_MB, split[0]);
-            request.setStrVal(Request.Type.PROTO_MB, split[2]);
+            request.setStrVal(CoyoteRequest.Type.METHOD_MB, split[0]);
+            request.setStrVal(CoyoteRequest.Type.PROTO_MB, split[2]);
         }finally {
             parsingRequestLine = false;
         }
@@ -151,5 +143,9 @@ public class Http1InputBuffer implements InputBuffer {
             }
         }
         return true;
+    }
+
+    public ByteBuffer getByteBuffer() {
+        return byteBuffer;
     }
 }

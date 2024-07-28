@@ -13,5 +13,5 @@ public interface Adapter {
      * @param response 响应对象
      * @exception Exception 处理请求期间发生错误
      */
-    void service(Request request, Response response) throws Exception;
+    void service(CoyoteRequest request, CoyoteResponse response) throws Exception;
 }

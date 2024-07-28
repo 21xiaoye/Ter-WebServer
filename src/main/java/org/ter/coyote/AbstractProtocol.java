@@ -12,6 +12,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler{
      */
     private final AbstractEndpoint<S,?> endpoint;
     private Handler<S> handler;
+    protected Adapter adapter;
     public AbstractProtocol(AbstractEndpoint<S, ?> endpoint){
         this.endpoint = endpoint;
         ConnectionHandler<S> cHandler = new ConnectionHandler<>(this);
@@ -36,6 +37,15 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler{
 
     public void setHandler(Handler<S> handler) {
         this.handler = handler;
+    }
+
+    @Override
+    public Adapter getAdapter() {
+        return adapter;
+    }
+    @Override
+    public void setAdapter(Adapter adapter) {
+        this.adapter = adapter;
     }
 
     @Override

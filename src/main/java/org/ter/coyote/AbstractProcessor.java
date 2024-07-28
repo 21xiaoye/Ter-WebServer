@@ -6,13 +6,13 @@ import org.ter.util.net.wrapper.SocketWrapperBase;
 public abstract class AbstractProcessor extends AbstractProcessorLight{
     protected Adapter adapter;
     protected AbstractEndpoint<?,?> endpoint;
-    protected final Request request;
-    protected final Response response;
+    protected final CoyoteRequest request;
+    protected final CoyoteResponse response;
     protected volatile SocketWrapperBase<?> socketWrapper;
     public AbstractProcessor(AbstractEndpoint<?,?> endpoint){
-        this(endpoint, new Request(), new Response());
+        this(endpoint, new CoyoteRequest(), new CoyoteResponse());
     }
-    public AbstractProcessor(AbstractEndpoint<?,?> endpoint, Request request, Response response){
+    public AbstractProcessor(AbstractEndpoint<?,?> endpoint, CoyoteRequest request, CoyoteResponse response){
         this.endpoint = endpoint;
         this.request = request;
         this.response = response;
@@ -27,7 +27,7 @@ public abstract class AbstractProcessor extends AbstractProcessorLight{
     }
 
     @Override
-    public Request getRequest() {
+    public CoyoteRequest getRequest() {
         return request;
     }
 

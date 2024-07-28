@@ -1,6 +1,8 @@
 package org.ter.coyote;
 
 
+import org.ter.coyote.http11.Http11Processor;
+
 import java.util.concurrent.Executor;
 
 /**
@@ -8,14 +10,14 @@ import java.util.concurrent.Executor;
  * 连接器当中主要由三个组件组成:
  * <li>
  *     <b>EndPoint:</b>{@link org.ter.util.net.AbstractEndpoint}处理Socket，对Socket进行封装{@link org.ter.util.net.wrapper.SocketWrapperBase}交给Processor进行处理，
- * 例如http1.1协议的处理由{@link org.ter.coyote.http1.Http1Processor}处理。
+ * 例如http1.1协议的处理由{@link Http11Processor}处理。
  * </li>
  * <li>
- *     <b>Processor:</b>{@link Processor}，对EndPoint组件传过来的Socket封装器，解析Http，封装成{@link Request}对象，将
+ *     <b>Processor:</b>{@link Processor}，对EndPoint组件传过来的Socket封装器，解析Http，封装成{@link CoyoteRequest}对象，将
  * 该Request对象交给Adapter。
  * </li>
  * <li>
- *     <b>Adapter:</b>{@link Adapter}，处理Processor传过来的{@link Request}对象，并将其封装成ServletRequest对象，将其交给
+ *     <b>Adapter:</b>{@link Adapter}，处理Processor传过来的{@link CoyoteRequest}对象，并将其封装成ServletRequest对象，将其交给
  * {@link org.ter.container.Container}容器进行处理。
  * </li>
  */

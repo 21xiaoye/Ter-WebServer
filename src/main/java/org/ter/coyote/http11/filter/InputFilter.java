@@ -1,4 +1,4 @@
-package org.ter.coyote.http1.filter;
+package org.ter.coyote.http11.filter;
 
 /**
  * 输入过滤器

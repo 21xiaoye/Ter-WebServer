@@ -75,7 +75,7 @@ public class Connector extends LifecycleBase {
     /**
      * 默认的Coyote 协议处理器
      */
-    protected String protocolHandlerClassName = "org.ter.coyote.http1.Http11NioProtocol";
+    protected String protocolHandlerClassName = "org.ter.coyote.http11.Http11NioProtocol";
     /**
      * Coyote 适配器
      */
@@ -184,6 +184,8 @@ public class Connector extends LifecycleBase {
         if(Objects.isNull(this.parseBodyMethodsSet)){
             setParseBodyMethods(getParseBodyMethods());
         }
+        CoyoteAdapter coyoteAdapter = new CoyoteAdapter();
+        protocolHandler.setAdapter(coyoteAdapter);
         try {
             protocolHandler.init();
         }catch (Exception exception){

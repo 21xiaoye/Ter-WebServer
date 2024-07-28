@@ -1,15 +1,14 @@
-package org.ter.coyote.http1;
+package org.ter.coyote.http11;
 
+import org.ter.coyote.CoyoteResponse;
 import org.ter.coyote.OutputBuffer;
-import org.ter.coyote.Response;
-import org.ter.coyote.http1.filter.OutputFilter;
 import org.ter.util.net.wrapper.SocketWrapperBase;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class Http1OutputBuffer implements OutputBuffer {
-    protected Response response;
+public class Http11OutputBuffer implements OutputBuffer {
+    protected CoyoteResponse response;
 
     protected SocketWrapperBase<?> socketWrapper;
     protected OutputBuffer socketOutputBuffer;
@@ -22,23 +21,11 @@ public class Http1OutputBuffer implements OutputBuffer {
      */
     protected boolean responseFinished;
 
-    /**
-     * 响应正文的过滤器
-     */
-    protected OutputFilter[] filterLibrary;
-    protected OutputFilter[] activeFilters;
-    /**
-     * 最后一个过滤器标志
-     */
-    private int lastFilter;
-    public Http1OutputBuffer(Response response, int heardOutputBufferSize){
+    public Http11OutputBuffer(CoyoteResponse response, int heardOutputBufferSize){
         this.response = response;
         headerBuffer = ByteBuffer.allocate(heardOutputBufferSize);
-        filterLibrary = new OutputFilter[0];
-        activeFilters = new OutputFilter[0];
         socketOutputBuffer = new SocketOutputBuffer();
         this.responseFinished = false;
-        lastFilter = -1;
     }
     @Override
     public int doWrite(ByteBuffer buffer) throws IOException {

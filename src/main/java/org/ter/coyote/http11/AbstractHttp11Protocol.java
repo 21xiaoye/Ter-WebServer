@@ -1,10 +1,10 @@
-package org.ter.coyote.http1;
+package org.ter.coyote.http11;
 
 import org.ter.coyote.Processor;
 import org.ter.util.net.AbstractEndpoint;
 import org.ter.coyote.AbstractProtocol;
 
-public abstract class AbstractHttp1Protocol<S> extends AbstractProtocol<S> {
+public abstract class AbstractHttp11Protocol<S> extends AbstractProtocol<S> {
     private int maxHttpResponseHeaderSize = -1;
 
     public int getMaxHttpResponseHeaderSize() {
@@ -23,14 +23,14 @@ public abstract class AbstractHttp1Protocol<S> extends AbstractProtocol<S> {
         this.maxHttpHeaderSize = maxHttpHeaderSize;
     }
 
-    public AbstractHttp1Protocol(AbstractEndpoint<S, ?> endpoint) {
+    public AbstractHttp11Protocol(AbstractEndpoint<S, ?> endpoint) {
         super(endpoint);
     }
 
     @Override
     public Processor createProcessor() {
-        Http1Processor http1Processor = new Http1Processor(this, getEndpoint());
-        http1Processor.setAdapter(getAdapter());
-        return http1Processor;
+        Http11Processor http11Processor = new Http11Processor(this, getEndpoint());
+        http11Processor.setAdapter(getAdapter());
+        return http11Processor;
     }
 }

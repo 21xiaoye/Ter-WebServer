@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 
 /**
  * 输出缓冲区。
- * 此类由协议实现在内部使用。通过 Response.doWrite（） 进行。
+ * 此类由协议实现在内部使用。通过 CoyoteResponse.doWrite（） 进行。
  */
 public interface OutputBuffer {
     /**

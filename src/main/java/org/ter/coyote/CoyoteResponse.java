@@ -1,9 +1,8 @@
 package org.ter.coyote;
 
 import java.nio.charset.Charset;
-import java.util.Objects;
 
-public final class Response {
+public final class CoyoteResponse {
     /**
      * 默认的响应状态，表示请求成功
      */
@@ -16,7 +15,7 @@ public final class Response {
      * 关联输出缓冲区，将数据输入到Socket
      */
     OutputBuffer outputBuffer;
-    Request request;
+    CoyoteRequest request;
     /**
      * 响应正文使用的字符编码
      */

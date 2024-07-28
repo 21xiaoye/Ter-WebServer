@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.ter.coyote.http1;
+package org.ter.coyote.http11;
 
 
 /**
@@ -108,7 +108,10 @@ public final class Constants {
      */
     public static final byte QUESTION = (byte) '?';
 
-
+    /**
+     * ','
+     */
+    public static final String COMMA = ",";
     /**
      * Lower case offset.
      */
@@ -116,8 +119,12 @@ public final class Constants {
 
 
     /* Various constant "strings" */
+
     public static final String CONNECTION = "Connection";
+    public static final String KEEP_ALIVE_HEADER_VALUE_TOKEN = "keep-alive";
     public static final String CLOSE = "close";
+    public static final String USER_AGENT = "User-Agent";
+    public static final String HOST = "Host";
     /**
      * Identity filters (input and output).
      */
@@ -152,7 +159,6 @@ public final class Constants {
      * HTTP/1.0.
      */
     public static final String HTTP_10 = "HTTP/1.0";
-
 
     /**
      * HTTP/1.1.

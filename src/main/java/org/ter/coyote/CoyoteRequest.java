@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.TreeMap;
 
-public final class Request {
+public final class CoyoteRequest {
     public enum Type{
         METHOD_MB,PROTO_MB,URI_MB,QUERY_MB
     }
@@ -14,7 +14,6 @@ public final class Request {
     private int localPort = -1;
     private int remotePort = -1;
     private  String serverNameMB;
-    private  String schemeMB;
     /**
      * HTTP 请求类型 GET、POST......
      */
@@ -39,7 +38,7 @@ public final class Request {
     private  String localNameMB;
     private  String remoteHostMB;
     private  String localAddrMB;
-    private Response response;
+    private CoyoteResponse response;
     private Charset charset = null;
     private String characterEncoding = null;
     /**
@@ -47,7 +46,7 @@ public final class Request {
      */
     private TreeMap<String, String> headersMap;
 
-    public Request() {
+    public CoyoteRequest() {
         headersMap = new TreeMap<>();
     }
 
@@ -88,14 +87,6 @@ public final class Request {
 
     public void setServerNameMB(String serverNameMB) {
         this.serverNameMB = serverNameMB;
-    }
-
-    public String getSchemeMB() {
-        return schemeMB;
-    }
-
-    public void setSchemeMB(String schemeMB) {
-        this.schemeMB = schemeMB;
     }
 
     public String getMethodMB() {
@@ -178,11 +169,11 @@ public final class Request {
         return remoteHostMB;
     }
 
-    public Response getResponse() {
+    public CoyoteResponse getResponse() {
         return response;
     }
 
-    public void setResponse(Response response) {
+    public void setResponse(CoyoteResponse response) {
         this.response = response;
     }
 

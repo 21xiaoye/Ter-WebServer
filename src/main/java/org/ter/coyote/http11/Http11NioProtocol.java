@@ -1,27 +1,16 @@
-package org.ter.coyote.http1;
+package org.ter.coyote.http11;
 
 import org.ter.util.net.NioChannel;
 import org.ter.util.net.NioEndpoint;
 import org.ter.coyote.Adapter;
 import java.util.concurrent.Executor;
 
-public class Http11NioProtocol extends AbstractHttp1Protocol<NioChannel> {
+public class Http11NioProtocol extends AbstractHttp11Protocol<NioChannel> {
     public Http11NioProtocol() {
         this(new NioEndpoint());
     }
     public Http11NioProtocol(NioEndpoint endpoint) {
         super(endpoint);
-    }
-
-
-    @Override
-    public Adapter getAdapter() {
-        return null;
-    }
-
-    @Override
-    public void setAdapter(Adapter adapter) {
-
     }
 
     @Override
