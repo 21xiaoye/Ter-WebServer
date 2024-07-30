@@ -1,5 +1,8 @@
 package org.ter.coyote;
 
+import org.ter.util.Constants;
+import org.ter.util.net.wrapper.SocketWrapperBase;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -10,7 +13,7 @@ public final class CoyoteRequest {
         METHOD_MB,PROTO_MB,URI_MB,QUERY_MB
     }
     private long startTime = -1;
-    private int ServerPort = -1;
+    private int serverPort = -1;
     private int localPort = -1;
     private int remotePort = -1;
     private  String serverNameMB;
@@ -22,6 +25,7 @@ public final class CoyoteRequest {
      * HTTP 请求路径
      */
     private  String uriMB;
+    private String schemeMB;
     private  String decodedUriMB;
     /**
      * HTTP 请求参数
@@ -41,10 +45,13 @@ public final class CoyoteRequest {
     private CoyoteResponse response;
     private Charset charset = null;
     private String characterEncoding = null;
+    private SocketWrapperBase<?> socketWrapper;
     /**
      * HTTP 请求头信息
      */
     private TreeMap<String, String> headersMap;
+    private int contentLength = -1;
+    private String contentType = null;
 
     public CoyoteRequest() {
         headersMap = new TreeMap<>();
@@ -58,28 +65,28 @@ public final class CoyoteRequest {
         this.startTime = startTime;
     }
     public int getServerPort() {
-        return ServerPort;
+        return serverPort;
     }
 
     public void setServerPort(int serverPort) {
-        ServerPort = serverPort;
+        this.serverPort = serverPort;
     }
 
     public int getLocalPort() {
+        if(localPort == -1){
+            localPort = socketWrapper.getLocalPort();
+        }
         return localPort;
     }
 
-    public void setLocalPort(int localPort) {
-        this.localPort = localPort;
-    }
 
     public int getRemotePort() {
+        if(remotePort == -1){
+            remotePort = socketWrapper.getRemotePort();
+        }
         return remotePort;
     }
 
-    public void setRemotePort(int remotePort) {
-        this.remotePort = remotePort;
-    }
 
     public String getServerNameMB() {
         return serverNameMB;
@@ -103,6 +110,14 @@ public final class CoyoteRequest {
 
     public void setUriMB(String uriMB) {
         this.uriMB = uriMB;
+    }
+
+    public String getSchemeMB() {
+        return schemeMB;
+    }
+
+    public void setSchemeMB(String schemeMB) {
+        this.schemeMB = schemeMB;
     }
 
     public String getDecodedUriMB() {
@@ -134,38 +149,31 @@ public final class CoyoteRequest {
     }
 
     public String getRemoteAddrMB() {
+        if(Objects.isNull(remoteAddrMB)){
+            remoteAddrMB = socketWrapper.getRemoteAddr();
+        }
         return remoteAddrMB;
     }
 
-    public void setRemoteAddrMB(String remoteAddrMB) {
-        this.remoteAddrMB = remoteAddrMB;
-    }
-
-    public void setPeerAddrMB(String peerAddrMB) {
-        this.peerAddrMB = peerAddrMB;
-    }
-
-    public void setLocalAddrMB(String localAddrMB) {
-        this.localAddrMB = localAddrMB;
-    }
 
     public String getLocalAddrMB() {
+        if(Objects.isNull(localAddrMB)){
+            localAddrMB = socketWrapper.getLocalAddr();
+        }
         return localAddrMB;
     }
 
-    public void setLocalNameMB(String localNameMB) {
-        this.localNameMB = localNameMB;
-    }
 
     public String getLocalNameMB() {
+        if(Objects.isNull(localNameMB)){
+            localNameMB = socketWrapper.getLocalName();
+        }
         return localNameMB;
     }
-
-    public void setRemoteHostMB(String remoteHostMB) {
-        this.remoteHostMB = remoteHostMB;
-    }
-
     public String getRemoteHostMB() {
+        if(Objects.isNull(remoteHostMB)){
+            remoteHostMB = socketWrapper.getRemoteName();
+        }
         return remoteHostMB;
     }
 
@@ -192,6 +200,27 @@ public final class CoyoteRequest {
     public void setCharset(Charset charset) {
         this.charset = charset;
     }
+
+    public void setSocketWrapper(SocketWrapperBase<?> socketWrapper) {
+        this.socketWrapper = socketWrapper;
+    }
+
+    public int getContentLength() {
+        if(contentLength > -1){
+            return contentLength;
+        }
+        String headerValue = getHeader(Constants.CONTENT_LENGTH);
+        contentLength = Integer.parseInt(headerValue);
+        return contentLength;
+    }
+
+    public String getContentType() {
+        if(Objects.isNull(contentType)){
+            contentType = getHeader(Constants.CONTENT_TYPE);
+        }
+        return contentType;
+    }
+
     public void setStrVal(Type type, byte[] bytes, int start, int end){
         setStrVal(type, new String(bytes, start, end, StandardCharsets.US_ASCII));
     }

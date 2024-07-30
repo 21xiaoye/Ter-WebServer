@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.ter.coyote.http11;
+package org.ter.util;
 
 
 /**
@@ -116,7 +116,7 @@ public final class Constants {
      * Lower case offset.
      */
     public static final byte LC_OFFSET = A - a;
-
+    public static final String ALL = "*";
 
     /* Various constant "strings" */
 
@@ -124,6 +124,8 @@ public final class Constants {
     public static final String KEEP_ALIVE_HEADER_VALUE_TOKEN = "keep-alive";
     public static final String CLOSE = "close";
     public static final String USER_AGENT = "User-Agent";
+    public static final String CONTENT_LENGTH = "Content-Length";
+    public static final String CONTENT_TYPE = "Content-Type";
     public static final String HOST = "Host";
     /**
      * Identity filters (input and output).
@@ -164,4 +166,7 @@ public final class Constants {
      * HTTP/1.1.
      */
     public static final String HTTP_11 = "HTTP/1.1";
+    public static final String HTTPS = "https";
+    public static final String OPTIONS = "OPTIONS";
+    public static final String GET = "GET";
 }

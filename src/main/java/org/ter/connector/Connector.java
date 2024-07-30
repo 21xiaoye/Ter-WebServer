@@ -4,6 +4,8 @@ import org.ter.container.Service;
 import org.ter.container.util.IntrospectionUtils;
 import org.ter.container.util.StringUtil;
 import org.ter.coyote.Adapter;
+import org.ter.coyote.CoyoteRequest;
+import org.ter.coyote.CoyoteResponse;
 import org.ter.coyote.ProtocolHandler;
 import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.LifecycleBase;
@@ -184,7 +186,7 @@ public class Connector extends LifecycleBase {
         if(Objects.isNull(this.parseBodyMethodsSet)){
             setParseBodyMethods(getParseBodyMethods());
         }
-        CoyoteAdapter coyoteAdapter = new CoyoteAdapter();
+        CoyoteAdapter coyoteAdapter = new CoyoteAdapter(this);
         protocolHandler.setAdapter(coyoteAdapter);
         try {
             protocolHandler.init();
@@ -223,5 +225,20 @@ public class Connector extends LifecycleBase {
      */
     public boolean setProperty(String name, String value) {
         return IntrospectionUtils.setProperty(protocolHandler, name, value);
+    }
+
+
+
+    public Request createRequest(CoyoteRequest coyoteRequest) {
+        Request request = new Request();
+        request.setConnector(this);
+        request.setCoyoteRequest(coyoteRequest);
+        return request;
+    }
+    public Response createResponse(CoyoteResponse coyoteResponse){
+        Response response = new Response();
+        response.setCoyoteResponse(coyoteResponse);
+        response.setConnector(this);
+        return response;
     }
 }

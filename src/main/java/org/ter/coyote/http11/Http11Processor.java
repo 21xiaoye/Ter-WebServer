@@ -3,6 +3,7 @@ package org.ter.coyote.http11;
 import org.ter.coyote.AbstractProcessor;
 import org.ter.coyote.HttpParse;
 import org.ter.coyote.SocketState;
+import org.ter.util.Constants;
 import org.ter.util.net.AbstractEndpoint;
 import org.ter.util.net.wrapper.SocketWrapperBase;
 
@@ -66,6 +67,8 @@ public class Http11Processor extends AbstractProcessor {
      * 需在{@link Http11InputBuffer#parseHeaders()}解析HTTP请求头之后执行
      */
     private void verifySettingRequest(){
+        request.setSchemeMB(endpoint.isSSLEnabled() ? "https" : "http");
+
         String connectionMB = request.getHeader(Constants.CONNECTION);
         if(HttpParse.containsFieldValue(connectionMB, Constants.CLOSE)){
             keepAlive = false;
@@ -76,13 +79,13 @@ public class Http11Processor extends AbstractProcessor {
         String hostMB = request.getHeader(Constants.HOST);
         if(Objects.isNull(hostMB)){
             response.setStatus(400);
-        }
-        if(hostMB.isEmpty()){
             request.setServerNameMB("");
             request.setServerPort(socketWrapper.getLocalPort());
-        }
-        String[] hostSplit = hostMB.split(Constants.COLON_STR);
-        if(hostSplit.length == 2){
+        }else {
+            String[] hostSplit = hostMB.split(Constants.COLON_STR);
+            if (hostSplit.length == 1) {
+                request.setServerNameMB(hostSplit[0]);
+            }
             request.setServerNameMB(hostSplit[0]);
             request.setServerPort(Integer.parseInt(hostSplit[1]));
         }
@@ -90,6 +93,7 @@ public class Http11Processor extends AbstractProcessor {
     @Override
     protected void setSocketWrapper(SocketWrapperBase<?> socketWrapper) {
         super.setSocketWrapper(socketWrapper);
+        request.setSocketWrapper(socketWrapper);
         inputBuffer.init(socketWrapper);
         outputBuffer.init(socketWrapper);
     }

@@ -2,6 +2,7 @@ package org.ter.coyote.http11;
 
 import org.ter.coyote.InputBuffer;
 import org.ter.coyote.CoyoteRequest;
+import org.ter.util.Constants;
 import org.ter.util.buf.CharsetFunctions;
 import org.ter.util.net.wrapper.SocketWrapperBase;
 

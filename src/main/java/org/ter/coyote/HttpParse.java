@@ -1,6 +1,6 @@
 package org.ter.coyote;
 
-import org.ter.coyote.http11.Constants;
+import org.ter.util.Constants;
 
 import java.util.Objects;
 

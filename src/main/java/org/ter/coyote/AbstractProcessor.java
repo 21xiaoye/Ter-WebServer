@@ -16,6 +16,7 @@ public abstract class AbstractProcessor extends AbstractProcessorLight{
         this.endpoint = endpoint;
         this.request = request;
         this.response = response;
+        this.request.setResponse(response);
     }
 
     public Adapter getAdapter() {

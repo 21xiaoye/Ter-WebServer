@@ -60,6 +60,9 @@ public abstract class AbstractEndpoint <S,U>{
      * 连接处理程序
      */
     private Handler<S> handler = null;
+    private boolean SSLEnabled = false;
+    public boolean isSSLEnabled() { return SSLEnabled; }
+    public void setSSLEnabled(boolean SSLEnabled) { this.SSLEnabled = SSLEnabled; }
 
     public Handler<S> getHandler() {
         return handler;

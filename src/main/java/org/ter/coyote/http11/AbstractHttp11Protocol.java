@@ -26,6 +26,13 @@ public abstract class AbstractHttp11Protocol<S> extends AbstractProtocol<S> {
     public AbstractHttp11Protocol(AbstractEndpoint<S, ?> endpoint) {
         super(endpoint);
     }
+    public boolean isSSLEnabled() {
+        return getEndpoint().isSSLEnabled();
+    }
+
+    public void setSSLEnabled(boolean SSLEnabled) {
+        getEndpoint().setSSLEnabled(SSLEnabled);
+    }
 
     @Override
     public Processor createProcessor() {
