@@ -1,5 +1,6 @@
 package org.ter.lifecycle;
 
+import org.ter.container.Container;
 import org.ter.container.Engine;
 import org.ter.container.Service;
 import org.ter.container.mapper.Mapper;
@@ -26,7 +27,7 @@ public class MapperListener extends LifecycleBase implements ContainerListener, 
 
     @Override
     protected void initInternal() throws LifecycleException {
-        System.out.println("初始化映射器......");
+           System.out.println("初始化映射器......");
     }
 
     @Override
@@ -37,6 +38,7 @@ public class MapperListener extends LifecycleBase implements ContainerListener, 
         if(Objects.isNull(engine)){
             return;
         }
+        addListener(engine);
     }
 
     @Override
@@ -52,5 +54,13 @@ public class MapperListener extends LifecycleBase implements ContainerListener, 
     @Override
     public void lifecycleEvent(LifecycleEvent event) {
 
+    }
+    private void addListener(Container container){
+        container.addContainerListener(this);
+        container.addLifecycleListener(this);
+        Container[] children = container.findChildren();
+        for (Container child: children) {
+            addListener(child);
+        }
     }
 }
