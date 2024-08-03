@@ -1,11 +1,14 @@
 package org.ter.container.core;
 
+import jakarta.servlet.ServletContext;
 import org.ter.container.Context;
+import org.ter.container.Wrapper;
 import org.ter.container.util.URLEncoder;
 import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.LifecycleState;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class StandardContext extends ContainerBase implements Context {
@@ -21,6 +24,12 @@ public class StandardContext extends ContainerBase implements Context {
      * 此Web应用程序上下文路径
      */
     private String path= null;
+    /**
+     * 此Context的Servlet映射
+     */
+    private HashMap<String,String> servletMappings = new HashMap<>();
+
+    private final Object servletMappingsLock = new Object();
     public StandardContext(){
 
     }
@@ -67,6 +76,11 @@ public class StandardContext extends ContainerBase implements Context {
     }
 
     @Override
+    public ServletContext getServletContext() {
+        return null;
+    }
+
+    @Override
     protected void initInternal() throws LifecycleException {
         System.out.println("Context初始化......");
         super.initInternal();
@@ -77,29 +91,17 @@ public class StandardContext extends ContainerBase implements Context {
         System.out.println("Context启动......");
         setLifecycleState(LifecycleState.STARTING);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Override
+    public void addServletMappingDecoded(String pattern, String name) {
+        synchronized (servletMappingsLock){
+            String servletUrl = servletMappings.get(pattern);
+            if(Objects.nonNull(servletUrl)){
+                Wrapper wrapper = (Wrapper) findChild(pattern);
+                wrapper.removeChild(wrapper);
+            }
+            servletMappings.put(pattern, name);
+        }
+        Wrapper wrapper = (Wrapper) findChild(name);
+        wrapper.addMapping(pattern);
+    }
 }

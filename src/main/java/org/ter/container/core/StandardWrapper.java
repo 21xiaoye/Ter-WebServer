@@ -1,26 +1,24 @@
 package org.ter.container.core;
 
+import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import org.ter.container.Container;
 import org.ter.container.Context;
 import org.ter.container.Wrapper;
+import org.ter.lifecycle.LifecycleState;
 
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class StandardWrapper extends ContainerBase implements ServletConfig, Wrapper {
-    /**
-     * 父容器，只能是Context
-     */
     private Container parent;
     /**
      * 此Servlet的参数
      */
     protected HashMap<String,String> parameters = new HashMap<>();
+    protected final ArrayList<String> mappings = new ArrayList<>();
+    private final ReentrantReadWriteLock mappingsLock = new ReentrantReadWriteLock();
     private final ReentrantReadWriteLock parametersLock = new ReentrantReadWriteLock();
 
     @Override
@@ -65,5 +63,39 @@ public class StandardWrapper extends ContainerBase implements ServletConfig, Wra
         }finally {
             parametersLock.readLock().unlock();
         }
+    }
+
+    @Override
+    public Servlet getServlet() {
+        return null;
+    }
+
+    @Override
+    public void addMapping(String mapping) {
+
+        mappingsLock.writeLock().lock();
+        try {
+            mappings.add(mapping);
+        } finally {
+            mappingsLock.writeLock().unlock();
+        }
+        if (parent.getLifecycleState().equals(LifecycleState.STARTED)) {
+            fireContainerEvent(ADD_MAPPING_EVENT, mapping);
+        }
+
+    }
+    @Override
+    public void removeMapping(String mapping) {
+
+        mappingsLock.writeLock().lock();
+        try {
+            mappings.remove(mapping);
+        } finally {
+            mappingsLock.writeLock().unlock();
+        }
+        if (parent.getLifecycleState().equals(LifecycleState.STARTED)) {
+            fireContainerEvent(REMOVE_MAPPING_EVENT, mapping);
+        }
+
     }
 }

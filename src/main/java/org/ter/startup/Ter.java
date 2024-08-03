@@ -1,5 +1,6 @@
 package org.ter.startup;
 
+import jakarta.servlet.Servlet;
 import org.ter.connector.Connector;
 import org.ter.container.*;
 import org.ter.container.core.*;
@@ -120,5 +121,21 @@ public class Ter {
         engine.setDefaultHost(this.address);
         service.setContainer(engine);
         return engine;
+    }
+
+    /**
+     * 添加Servlet到Context上下文当中
+     *
+     * @param ctx   需要添加的Servlet上下文
+     * @param servletName   Servlet名称
+     * @param servlet   要添加的Servlet
+     * @return  返回此Servlet包装器
+     */
+    public  Wrapper addServlet(Context ctx, String servletName, Servlet servlet) {
+        Wrapper sw = new ExistingStandardWrapper(servlet);
+        sw.setName(servletName);
+        ctx.addChild(sw);
+
+        return sw;
     }
 }

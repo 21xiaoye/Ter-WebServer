@@ -43,34 +43,11 @@ public interface Context extends Container{
      */
     ServletContext getServletContext();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * 添加新的Servlet映射
+     *
+     * @param pattern   要映射的Servlet URL
+     * @param name  需要执行的Servlet的名称
+     */
+    void addServletMappingDecoded(String pattern, String name);
 }
