@@ -1,13 +1,14 @@
 package org.ter.container.core;
 
-import jakarta.servlet.Servlet;
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletContext;
+
 import org.ter.container.Container;
 import org.ter.container.Context;
 import org.ter.container.Wrapper;
 import org.ter.lifecycle.LifecycleState;
 
+import javax.servlet.Servlet;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -96,6 +97,15 @@ public class StandardWrapper extends ContainerBase implements ServletConfig, Wra
         if (parent.getLifecycleState().equals(LifecycleState.STARTED)) {
             fireContainerEvent(REMOVE_MAPPING_EVENT, mapping);
         }
+    }
+    @Override
+    public String[] findMappings() {
 
+        mappingsLock.readLock().lock();
+        try {
+            return mappings.toArray(new String[0]);
+        } finally {
+            mappingsLock.readLock().unlock();
+        }
     }
 }

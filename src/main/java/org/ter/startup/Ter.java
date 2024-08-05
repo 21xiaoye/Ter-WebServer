@@ -1,12 +1,12 @@
 package org.ter.startup;
 
-import jakarta.servlet.Servlet;
 import org.ter.connector.Connector;
 import org.ter.container.*;
 import org.ter.container.core.*;
 import org.ter.exception.LifecycleException;
 import org.ter.util.res.StringManager;
 
+import javax.servlet.Servlet;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
@@ -117,7 +117,7 @@ public class Ter {
             return service.getContainer();
         }
         Engine engine  = new StandardEngine();
-        engine.setName("Ter");
+        engine.setName("Ter-Engine");
         engine.setDefaultHost(this.address);
         service.setContainer(engine);
         return engine;

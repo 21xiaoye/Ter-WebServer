@@ -1,12 +1,13 @@
 package org.ter.container.core;
 
-import jakarta.servlet.ServletContext;
+
 import org.ter.container.Context;
 import org.ter.container.Wrapper;
 import org.ter.container.util.URLEncoder;
 import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.LifecycleState;
 
+import javax.servlet.ServletContext;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Objects;
@@ -25,11 +26,13 @@ public class StandardContext extends ContainerBase implements Context {
      */
     private String path= null;
     /**
-     * 此Context的Servlet映射
+     * 此Context的Servlet映射，URL:Servlet名称
      */
     private HashMap<String,String> servletMappings = new HashMap<>();
-
     private final Object servletMappingsLock = new Object();
+    private HashMap<String, Wrapper> wrapperMapping = new HashMap<>();
+    private final Object wrapperMappingsLock = new Object();
+    private Wrapper defaultWrapper = null;
     public StandardContext(){
 
     }
@@ -103,5 +106,22 @@ public class StandardContext extends ContainerBase implements Context {
         }
         Wrapper wrapper = (Wrapper) findChild(name);
         wrapper.addMapping(pattern);
+    }
+    @Override
+    public void setDefaultWrapper(Wrapper defaultWrapper) {
+        this.defaultWrapper = defaultWrapper;
+    }
+    @Override
+    public void addWrapper(String url, Wrapper wrapper){
+        synchronized (wrapperMappingsLock){
+            this.wrapperMapping.put(url, wrapper);
+        }
+    }
+    public Wrapper getWrapper(String url){
+        Wrapper wrapper = wrapperMapping.get(url);
+        if(Objects.nonNull(wrapper)){
+            return wrapper;
+        }
+        return defaultWrapper;
     }
 }

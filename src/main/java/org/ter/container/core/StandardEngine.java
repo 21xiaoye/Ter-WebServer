@@ -12,8 +12,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class StandardEngine extends ContainerBase implements Engine {
-    private String defaultHost = null;
-    private Service service = null;
+    private String defaultHost;
+    private Service service;
     public StandardEngine(){
 
     }

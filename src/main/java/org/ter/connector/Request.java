@@ -1,10 +1,12 @@
 package org.ter.connector;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import org.ter.container.Context;
+import org.ter.container.Host;
 import org.ter.coyote.CoyoteRequest;
 import org.ter.util.Constants;
 
+import javax.servlet.*;
+import javax.servlet.http.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -25,8 +27,9 @@ public class Request implements HttpServletRequest {
     private int localPort = -1;
     private String localName;
     private String localAddr;
-
-
+    private MappingData mappingData = new MappingData();
+    private DispatcherType internalDispatcherType = null;
+    private boolean parametersParsed = false;
 
     public void setConnector(Connector connector) {
         this.connector = connector;
@@ -188,9 +191,10 @@ public class Request implements HttpServletRequest {
     }
 
     @Override
-    public boolean authenticate(HttpServletResponse httpServletResponse) throws IOException, ServletException {
+    public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
         return false;
     }
+
 
     @Override
     public void login(String s, String s1) throws ServletException {
@@ -213,9 +217,10 @@ public class Request implements HttpServletRequest {
     }
 
     @Override
-    public <T extends HttpUpgradeHandler> T upgrade(Class<T> aClass) throws IOException, ServletException {
+    public <T extends HttpUpgradeHandler> T upgrade(Class<T> httpUpgradeHandlerClass) throws IOException, ServletException {
         return null;
     }
+
 
     @Override
     public Object getAttribute(String s) {
@@ -387,7 +392,7 @@ public class Request implements HttpServletRequest {
 
     @Override
     public ServletContext getServletContext() {
-        return null;
+        return getContext().getServletContext();
     }
 
     @Override
@@ -412,11 +417,27 @@ public class Request implements HttpServletRequest {
 
     @Override
     public AsyncContext getAsyncContext() {
+        if(!isAsyncStarted()){
+            throw new IllegalStateException("It is illegal to call this method if the current request is not in asynchronous mode (i.e. isAsyncStarted() returns false)");
+        }
         return null;
     }
 
     @Override
     public DispatcherType getDispatcherType() {
-        return null;
+        if(Objects.isNull(internalDispatcherType)){
+            internalDispatcherType = DispatcherType.REQUEST;
+        }
+        return internalDispatcherType;
+    }
+
+    public MappingData getMappingData() {
+        return mappingData;
+    }
+    public Host getHost(){
+        return mappingData.host;
+    }
+    public Context getContext(){
+        return mappingData.context;
     }
 }

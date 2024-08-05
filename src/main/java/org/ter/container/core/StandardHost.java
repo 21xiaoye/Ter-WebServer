@@ -6,6 +6,7 @@ import org.ter.container.Host;
 import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.LifecycleEvent;
 import org.ter.lifecycle.LifecycleListener;
+import org.ter.lifecycle.LifecycleState;
 
 import java.util.Locale;
 import java.util.Map;
@@ -57,6 +58,7 @@ public class StandardHost extends ContainerBase implements Host {
     @Override
     protected void startInternal() throws LifecycleException {
         System.out.println("启动Host......");
+        setLifecycleState(LifecycleState.STARTING);
         super.startInternal();
     }
 

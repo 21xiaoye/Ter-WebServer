@@ -6,6 +6,8 @@ import org.ter.coyote.CoyoteRequest;
 import org.ter.coyote.CoyoteResponse;
 import org.ter.util.Constants;
 
+import java.io.IOException;
+
 /**
  * 适配器，将Processor传过来的CoyoteRequest对象转换成HttpServletRequest对象
  * 将其交给Container容器进行处理。<br/>
@@ -31,7 +33,7 @@ public class CoyoteAdapter implements Adapter {
         }
     }
 
-    private boolean postParseRequest(Request request, CoyoteRequest coyoteRequest, Response response, CoyoteResponse coyoteResponse){
+    private boolean postParseRequest(Request request, CoyoteRequest coyoteRequest, Response response, CoyoteResponse coyoteResponse) throws IOException {
         int serverPort = coyoteRequest.getServerPort();
         // 设置默认端口
         if(serverPort == -1){
@@ -50,6 +52,11 @@ public class CoyoteAdapter implements Adapter {
             }
         }
         coyoteRequest.setDecodedUriMB(uriMB);
+        boolean mapRequired = true;
+        while (mapRequired){
+            connector.getService().getMapper().map(coyoteRequest.getServerNameMB(), coyoteRequest.getDecodedUriMB(), request.getMappingData());
+            System.out.println("jjj");
+        }
         return true;
     }
 }

@@ -8,6 +8,7 @@ import org.ter.util.res.StringManager;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -44,10 +45,6 @@ public class ContainerBase extends LifecycleBase implements Container {
      */
     protected boolean startChildren = true;
     /**
-     * 增加对此组件的属性更改支持
-     */
-    protected final PropertyChangeSupport support = new PropertyChangeSupport(this);
-    /**
      * 线程池
      */
     protected ThreadPoolExecutor startStopExecutor;
@@ -61,9 +58,8 @@ public class ContainerBase extends LifecycleBase implements Container {
         if(Objects.isNull(name)){
             throw new IllegalArgumentException(sm.getString("containerBase.nullName"));
         }
-        String oldName = this.name;
+
         this.name = name;
-        support.firePropertyChange("name", oldName, name);
     }
 
     /**
@@ -73,9 +69,7 @@ public class ContainerBase extends LifecycleBase implements Container {
         return this.startChildren;
     }
     public void setStartChildren(boolean startChildren){
-        boolean oldStartChildren = this.startChildren;
         this.startChildren = startChildren;
-        support.firePropertyChange("startChildren", oldStartChildren, startChildren);
     }
     @Override
     public Container getParent() {
@@ -83,9 +77,7 @@ public class ContainerBase extends LifecycleBase implements Container {
     }
     @Override
     public void setParent(Container container) {
-        Container oldParent = this.parent;
-        this.parent = parent;
-        support.firePropertyChange("parent", oldParent, container);
+        this.parent = container;
     }
 
     @Override
@@ -101,9 +93,7 @@ public class ContainerBase extends LifecycleBase implements Container {
 
     @Override
     public void setParentClassLoader(ClassLoader parentClassLoader) {
-        ClassLoader oldParentClassLoader = this.parentClassLoader;
-        this.parentClassLoader = parentClassLoader;
-        this.support.firePropertyChange("parentClassLoader", oldParentClassLoader, parentClassLoader);
+        this.parentClassLoader = getParentClassLoader();
     }
 
     @Override
@@ -140,10 +130,6 @@ public class ContainerBase extends LifecycleBase implements Container {
         this.listeners.add(listener);
     }
 
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        support.addPropertyChangeListener(listener);
-    }
 
     @Override
     public Container findChild(String name) {
@@ -202,11 +188,6 @@ public class ContainerBase extends LifecycleBase implements Container {
     }
 
     @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        this.support.removePropertyChangeListener(listener);
-    }
-
-    @Override
     public void fireContainerEvent(String type, Object data) {
         if(this.listeners.size() < 1){
             return;
@@ -227,10 +208,18 @@ public class ContainerBase extends LifecycleBase implements Container {
     @Override
     protected void startInternal() throws LifecycleException {
         Container[] children = findChildren();
+        List<Future<Void>> results = new ArrayList<>();
         for (Container container : children) {
-            this.startStopExecutor.submit(new StartChild(container));
+            results.add(this.startStopExecutor.submit(new StartChild(container)));
         }
 
+        for (Future<Void> result : results) {
+            try {
+                result.get();
+            } catch (Throwable e) {
+                // 记录日志
+            }
+        }
 //        if(this.pipeline instanceof Lifecycle){
 //            ((Lifecycle) this.pipeline).start();
 //        }

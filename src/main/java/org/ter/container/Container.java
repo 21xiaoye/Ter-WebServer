@@ -82,12 +82,6 @@ public interface Container extends Lifecycle {
      */
     void addContainerListener(ContainerListener listener);
 
-    /**
-     * 添加属性更改侦听器
-     *
-     * @param listener  要添加的属性侦听器
-     */
-    void addPropertyChangeListener(PropertyChangeListener listener);
 
     /**
      * 根据名称获取子容器
@@ -124,14 +118,6 @@ public interface Container extends Lifecycle {
      * @param listener  需要删除的事件侦听器
      */
     void removeContainerListener(ContainerListener listener);
-
-    /**
-     * 删除于此容器相关联的属性事件侦听器
-     *
-     * @param listener  需要删除的属性事件侦听器
-     */
-    void removePropertyChangeListener(PropertyChangeListener listener);
-
     /**
      *  通知与此容器相关联的容器事件侦听器，此容器发生了事件
      *

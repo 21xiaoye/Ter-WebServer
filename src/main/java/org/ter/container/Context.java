@@ -1,6 +1,7 @@
 package org.ter.container;
 
-import jakarta.servlet.ServletContext;
+
+import javax.servlet.ServletContext;
 
 public interface Context extends Container{
     /**
@@ -50,4 +51,7 @@ public interface Context extends Container{
      * @param name  需要执行的Servlet的名称
      */
     void addServletMappingDecoded(String pattern, String name);
+    void setDefaultWrapper(Wrapper defaultWrapper);
+    void addWrapper(String url,Wrapper wrapper);
+    Wrapper getWrapper(String url);
 }

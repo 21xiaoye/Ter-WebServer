@@ -31,11 +31,6 @@ public class StandardService extends LifecycleBase implements Service {
      */
     private Server server = null;
     /**
-     * 对此组件的属性进行更改，
-     * 通知侦听器
-     */
-    protected final PropertyChangeSupport support = new PropertyChangeSupport(this);
-    /**
      * 与此服务关联的连接器列表
      */
     protected Connector connectors[] = new Connector[0];
@@ -179,7 +174,6 @@ public class StandardService extends LifecycleBase implements Service {
     public void setParentClassLoader(ClassLoader classLoader) {
         ClassLoader cl = classLoader;
         this.parentClassLoader = classLoader;
-        support.firePropertyChange("parentClassLoader", cl, classLoader);
     }
 
     @Override
@@ -190,12 +184,11 @@ public class StandardService extends LifecycleBase implements Service {
     @Override
     public void addConnector(Connector connector) {
         synchronized (connectorsLock){
+            connector.setService(this);
             Connector[] newConnectors = new Connector[connectors.length + 1];
             System.arraycopy(this.connectors, 0, newConnectors, 0, connectors.length);
             newConnectors[connectors.length] = connector;
             this.connectors = newConnectors;
-
-            support.firePropertyChange("connector", null, connector);
         }
     }
 

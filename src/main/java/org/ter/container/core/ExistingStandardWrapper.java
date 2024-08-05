@@ -1,6 +1,7 @@
 package org.ter.container.core;
 
-import jakarta.servlet.Servlet;
+
+import javax.servlet.Servlet;
 
 public class ExistingStandardWrapper extends StandardWrapper{
     private final Servlet existingServlet;

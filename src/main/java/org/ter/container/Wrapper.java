@@ -1,7 +1,11 @@
 package org.ter.container;
 
-import jakarta.servlet.Servlet;
 
+import javax.servlet.Servlet;
+
+/**
+ * Servlet包装器接口
+ */
 public interface Wrapper extends Container{
     /**
      * 添加包装器的容器事件。
@@ -20,8 +24,16 @@ public interface Wrapper extends Container{
 
     /**
      * 删除与此包装器相关的映射
-     * @param mapping
+     *
+     * @param mapping 需要删除的映射URL
      */
     void removeMapping(String mapping);
+
+    /**
+     * 添加于此包装器相关的映射
+     *
+     * @param mapping 需要添加到此包装器的URL
+     */
     void addMapping(String mapping);
+    String[] findMappings();
 }
