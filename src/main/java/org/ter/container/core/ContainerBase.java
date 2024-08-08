@@ -2,12 +2,11 @@ package org.ter.container.core;
 
 import org.ter.container.Container;
 import org.ter.container.Pipeline;
+import org.ter.container.pipeline.StandardPipeline;
 import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.*;
 import org.ter.util.res.StringManager;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +38,7 @@ public class ContainerBase extends LifecycleBase implements Container {
     /**
      * 与此容器关联的 Pipeline对象
      */
-//    protected final Pipeline pipeline = new StandardPipeline(this);
+    protected final Pipeline pipeline = new StandardPipeline(this);
     /**
      * 添加子容器时，是否启动子容器
      */
@@ -98,8 +97,7 @@ public class ContainerBase extends LifecycleBase implements Container {
 
     @Override
     public Pipeline getPipeline() {
-//        return this.pipeline;
-        return null;
+        return this.pipeline;
     }
 
     @Override
@@ -225,6 +223,7 @@ public class ContainerBase extends LifecycleBase implements Container {
 //        }
         setLifecycleState(LifecycleState.STARTING);
     }
+
 
     @Override
     protected void stopInternal() throws LifecycleException {

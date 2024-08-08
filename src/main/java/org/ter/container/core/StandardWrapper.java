@@ -4,6 +4,7 @@ package org.ter.container.core;
 import org.ter.container.Container;
 import org.ter.container.Context;
 import org.ter.container.Wrapper;
+import org.ter.container.pipeline.StandardWrapperValve;
 import org.ter.lifecycle.LifecycleState;
 
 import javax.servlet.Servlet;
@@ -21,7 +22,9 @@ public class StandardWrapper extends ContainerBase implements ServletConfig, Wra
     protected final ArrayList<String> mappings = new ArrayList<>();
     private final ReentrantReadWriteLock mappingsLock = new ReentrantReadWriteLock();
     private final ReentrantReadWriteLock parametersLock = new ReentrantReadWriteLock();
-
+    public StandardWrapper(){
+        pipeline.setBasic(new StandardWrapperValve());
+    }
     @Override
     public Container getParent() {
         return parent;

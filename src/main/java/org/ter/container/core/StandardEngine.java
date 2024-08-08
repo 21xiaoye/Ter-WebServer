@@ -4,6 +4,7 @@ import org.ter.container.Container;
 import org.ter.container.Engine;
 import org.ter.container.Host;
 import org.ter.container.Service;
+import org.ter.container.pipeline.StandardEngineValve;
 import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.LifecycleListener;
 
@@ -15,7 +16,7 @@ public class StandardEngine extends ContainerBase implements Engine {
     private String defaultHost;
     private Service service;
     public StandardEngine(){
-
+        pipeline.setBasic(new StandardEngineValve());
     }
     @Override
     public LifecycleListener[] findLifecycleListeners() {

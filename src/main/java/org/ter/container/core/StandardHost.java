@@ -3,6 +3,8 @@ package org.ter.container.core;
 import org.ter.container.Container;
 import org.ter.container.Context;
 import org.ter.container.Host;
+import org.ter.container.Valve;
+import org.ter.container.pipeline.StandardHostValve;
 import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.LifecycleEvent;
 import org.ter.lifecycle.LifecycleListener;
@@ -16,8 +18,9 @@ import java.util.WeakHashMap;
 public class StandardHost extends ContainerBase implements Host {
     private final Map<ClassLoader, String> childClassLoader = new WeakHashMap<>();
     private String contextClass = "org.ter.container.core.StandardContext";
+    private String errorReportValveClass = "org.ter.container.pipeline.ErrorReportValve";
     public StandardHost(){
-
+        pipeline.setBasic(new StandardHostValve());
     }
     @Override
     public void setName(String name) {
@@ -48,7 +51,6 @@ public class StandardHost extends ContainerBase implements Host {
             }
         }
     }
-
     @Override
     protected void initInternal() throws LifecycleException {
         System.out.println("初始化Host......");
@@ -58,8 +60,20 @@ public class StandardHost extends ContainerBase implements Host {
     @Override
     protected void startInternal() throws LifecycleException {
         System.out.println("启动Host......");
+        String valveClass = getErrorReportValveClass();
+        try {
+
+            if (!getPipeline().findValve(valveClass)) {
+                Valve valve = (Valve) Class.forName(valveClass).getConstructor().newInstance();
+                getPipeline().addValve(valve);
+            }
+        }catch (Throwable throwable){
+            //记录日志
+        }
         setLifecycleState(LifecycleState.STARTING);
         super.startInternal();
     }
-
+    public String getErrorReportValveClass() {
+        return errorReportValveClass;
+    }
 }

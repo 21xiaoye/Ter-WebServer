@@ -6,7 +6,9 @@ import org.ter.coyote.CoyoteRequest;
 import org.ter.coyote.CoyoteResponse;
 import org.ter.util.Constants;
 
+import javax.servlet.SessionTrackingMode;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * 适配器，将Processor传过来的CoyoteRequest对象转换成HttpServletRequest对象
@@ -55,7 +57,10 @@ public class CoyoteAdapter implements Adapter {
         boolean mapRequired = true;
         while (mapRequired){
             connector.getService().getMapper().map(coyoteRequest.getServerNameMB(), coyoteRequest.getDecodedUriMB(), request.getMappingData());
-            System.out.println("jjj");
+            if(Objects.isNull(request.getContext())){
+                return true;
+            }
+            mapRequired = false;
         }
         return true;
     }

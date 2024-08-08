@@ -3,6 +3,7 @@ package org.ter.container.core;
 
 import org.ter.container.Context;
 import org.ter.container.Wrapper;
+import org.ter.container.pipeline.StandardContextValve;
 import org.ter.container.util.URLEncoder;
 import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.LifecycleState;
@@ -34,7 +35,7 @@ public class StandardContext extends ContainerBase implements Context {
     private final Object wrapperMappingsLock = new Object();
     private Wrapper defaultWrapper = null;
     public StandardContext(){
-
+        pipeline.setBasic(new StandardContextValve());
     }
     @Override
     public String getDocBase() {

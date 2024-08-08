@@ -100,7 +100,7 @@ public abstract class LifecycleBase implements Lifecycle{
             handleSubClassException(throwable, "lifecycleBase.startFail", toString());
         }
     }
-    protected abstract void startInternal() throws LifecycleException;
+    protected abstract void startInternal() throws LifecycleException, ClassNotFoundException;
     @Override
     public final synchronized void stop() throws LifecycleException {
         if(LifecycleState.STOPPING_PREP.equals(state)
@@ -180,10 +180,6 @@ public abstract class LifecycleBase implements Lifecycle{
     }
     protected synchronized void setLifecycleState(LifecycleState state) throws LifecycleException{
         setStateInternal(state, null,true);
-    }
-    protected synchronized void setStateInternal(LifecycleState state, Object data)
-            throws LifecycleException {
-        setStateInternal(state, data, true);
     }
     private synchronized void setStateInternal(LifecycleState state, Object data, boolean check) throws LifecycleException{
         if(check){
