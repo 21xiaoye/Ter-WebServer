@@ -64,7 +64,6 @@ public class StandardPipeline extends LifecycleBase implements Pipeline {
             }
         }
 
-        // Update the pipeline
         Valve current = first;
         while (current != null) {
             if (current.getNext() == oldBasic) {

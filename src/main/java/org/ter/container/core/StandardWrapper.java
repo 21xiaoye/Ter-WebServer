@@ -10,6 +10,7 @@ import org.ter.lifecycle.LifecycleState;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -18,13 +19,16 @@ public class StandardWrapper extends ContainerBase implements ServletConfig, Wra
     /**
      * 此Servlet的参数
      */
-    protected HashMap<String,String> parameters = new HashMap<>();
+    protected HashMap<String, String> parameters = new HashMap<>();
     protected final ArrayList<String> mappings = new ArrayList<>();
     private final ReentrantReadWriteLock mappingsLock = new ReentrantReadWriteLock();
     private final ReentrantReadWriteLock parametersLock = new ReentrantReadWriteLock();
-    public StandardWrapper(){
+    protected volatile Servlet servlet;
+
+    public StandardWrapper() {
         pipeline.setBasic(new StandardWrapperValve());
     }
+
     @Override
     public Container getParent() {
         return parent;
@@ -39,22 +43,24 @@ public class StandardWrapper extends ContainerBase implements ServletConfig, Wra
     public String getServletName() {
         return getName();
     }
+
     @Override
     public ServletContext getServletContext() {
-        if(Objects.isNull(parent)){
+        if (Objects.isNull(parent)) {
             return null;
-        }else if(!(parent instanceof Context)){
+        } else if (!(parent instanceof Context)) {
             return null;
-        }else{
-            return ((Context)parent).getServletContext();
+        } else {
+            return ((Context) parent).getServletContext();
         }
     }
+
     @Override
     public String getInitParameter(String s) {
         parametersLock.readLock().lock();
         try {
             return parameters.get(s);
-        }finally {
+        } finally {
             parametersLock.readLock().unlock();
         }
     }
@@ -64,7 +70,7 @@ public class StandardWrapper extends ContainerBase implements ServletConfig, Wra
         parametersLock.readLock().lock();
         try {
             return Collections.enumeration(parameters.keySet());
-        }finally {
+        } finally {
             parametersLock.readLock().unlock();
         }
     }
@@ -88,6 +94,7 @@ public class StandardWrapper extends ContainerBase implements ServletConfig, Wra
         }
 
     }
+
     @Override
     public void removeMapping(String mapping) {
 
@@ -101,14 +108,29 @@ public class StandardWrapper extends ContainerBase implements ServletConfig, Wra
             fireContainerEvent(REMOVE_MAPPING_EVENT, mapping);
         }
     }
+
     @Override
     public String[] findMappings() {
-
         mappingsLock.readLock().lock();
         try {
             return mappings.toArray(new String[0]);
         } finally {
             mappingsLock.readLock().unlock();
         }
+    }
+
+    @Override
+    public Servlet allocate() throws ServletException {
+        if (Objects.isNull(servlet)) {
+            synchronized (this) {
+                servlet = loadServlet();
+            }
+        }
+        return servlet;
+    }
+
+    @Override
+    public Servlet loadServlet() throws ServletException {
+        throw new UnsupportedOperationException();
     }
 }

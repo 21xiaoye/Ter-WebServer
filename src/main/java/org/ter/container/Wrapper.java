@@ -2,6 +2,7 @@ package org.ter.container;
 
 
 import javax.servlet.Servlet;
+import javax.servlet.ServletException;
 
 /**
  * Servlet包装器接口
@@ -36,4 +37,12 @@ public interface Wrapper extends Container{
      */
     void addMapping(String mapping);
     String[] findMappings();
+
+    /**
+     * 分配初始化Servlet实例，并调用service()方法
+     * @return 分配的Servlet 实例
+     * @throws ServletException 在加载Servlet实例的过程当中发生错误
+     */
+    Servlet allocate() throws ServletException;
+    Servlet loadServlet() throws ServletException;
 }

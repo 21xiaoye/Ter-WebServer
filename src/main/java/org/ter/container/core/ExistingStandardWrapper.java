@@ -2,6 +2,7 @@ package org.ter.container.core;
 
 
 import javax.servlet.Servlet;
+import javax.servlet.ServletException;
 
 public class ExistingStandardWrapper extends StandardWrapper{
     private final Servlet existingServlet;
@@ -16,5 +17,16 @@ public class ExistingStandardWrapper extends StandardWrapper{
     @Override
     public String getServletName() {
         return existingServlet.getClass().getName();
+    }
+
+    @Override
+    public synchronized Servlet loadServlet() throws ServletException {
+        Servlet servlet;
+        try {
+            servlet = existingServlet.getClass().getConstructor().newInstance();
+        }catch (ReflectiveOperationException exception){
+            throw new ServletException(exception);
+        }
+        return servlet;
     }
 }

@@ -72,13 +72,13 @@ public class Response implements HttpServletResponse {
     }
 
     @Override
-    public void sendError(int i, String s) throws IOException {
+    public void sendError(int status, String message) throws IOException {
 
     }
 
     @Override
-    public void sendError(int i) throws IOException {
-
+    public void sendError(int status) throws IOException {
+        sendError(status, null);
     }
 
     @Override

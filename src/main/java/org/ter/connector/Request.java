@@ -2,6 +2,7 @@ package org.ter.connector;
 
 import org.ter.container.Context;
 import org.ter.container.Host;
+import org.ter.container.Wrapper;
 import org.ter.coyote.CoyoteRequest;
 import org.ter.util.Constants;
 
@@ -439,5 +440,8 @@ public class Request implements HttpServletRequest {
     }
     public Context getContext(){
         return mappingData.context;
+    }
+    public Wrapper getWrapper() {
+        return mappingData.wrapper;
     }
 }
