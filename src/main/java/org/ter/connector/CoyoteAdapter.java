@@ -15,8 +15,7 @@ import java.util.Objects;
  * 将其交给Container容器进行处理。<br/>
  * 在这里主要是调用关联的Connector进行处理，在Connector会调用相应的Service。
  * 然后经过管道{@link org.ter.container.Pipeline},在管道中有一系列的
- * {@link Valve}的阀门进行处理,也就是设计模式之一的
- * Pipeline(管道)模式。
+ * {@link Valve}的阀门进行处理
  */
 public class CoyoteAdapter implements Adapter {
     private Connector connector;
@@ -33,6 +32,8 @@ public class CoyoteAdapter implements Adapter {
         if(postParseRequest){
             connector.getService().getContainer().getPipeline().getFirst().invoke(request, response);
         }
+        // Servlet执行完请求，进行响应返回和关闭资源等操作
+        response.finishResponse();
     }
 
     private boolean postParseRequest(Request request, CoyoteRequest coyoteRequest, Response response, CoyoteResponse coyoteResponse) throws IOException {

@@ -17,13 +17,19 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class StandardWrapper extends ContainerBase implements ServletConfig, Wrapper {
     private Container parent;
     /**
-     * 此Servlet的参数
+     * Servlet实例
+     */
+    protected volatile Servlet servlet;
+    /**
+     * 当前Servlet的参数
      */
     protected HashMap<String, String> parameters = new HashMap<>();
+    /**
+     * 当前Servlet映射的URL
+     */
     protected final ArrayList<String> mappings = new ArrayList<>();
     private final ReentrantReadWriteLock mappingsLock = new ReentrantReadWriteLock();
     private final ReentrantReadWriteLock parametersLock = new ReentrantReadWriteLock();
-    protected volatile Servlet servlet;
 
     public StandardWrapper() {
         pipeline.setBasic(new StandardWrapperValve());

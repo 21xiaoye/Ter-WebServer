@@ -71,6 +71,12 @@ public class Http11InputBuffer implements InputBuffer {
         return true;
     }
 
+    /**
+     * 读取请求当中的数据，并跳过请求数据开头的 "\r","\n"
+     *
+     * @return true有数据被读取，false没有读取到数据
+     * @throws IOException 在读取的过程当中发生I/O错误
+     */
     private boolean skipStartCRLF() throws IOException {
         do {
             if (!read()) {
@@ -84,10 +90,23 @@ public class Http11InputBuffer implements InputBuffer {
         byteBuffer = byteBuffer.position(byteBuffer.position() - 1);
         return true;
     }
+
+    /**
+     * 将读取的数据转为字符串形式
+     *
+     * @return 读取的字符串
+     */
     private String readStringLine(){
         ByteBuffer buffer = readLine(byteBuffer);
         return Objects.isNull(buffer) ? null : CharsetFunctions.stringAscii(buffer.array(), 0, buffer.limit());
     }
+
+    /**
+     * 读取一行数据，将其放入ByteBuffer当中
+     *
+     * @param buffer 存储读取数据的ByteBuffer缓冲区
+     * @return
+     */
     private ByteBuffer readLine(ByteBuffer buffer){
         ByteBuffer allocate = ByteBuffer.allocate(buffer.remaining());
         while (buffer.hasRemaining()){

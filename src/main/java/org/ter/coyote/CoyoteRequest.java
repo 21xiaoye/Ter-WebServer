@@ -78,92 +78,69 @@ public final class CoyoteRequest {
         }
         return localPort;
     }
-
-
     public int getRemotePort() {
         if(remotePort == -1){
             remotePort = socketWrapper.getRemotePort();
         }
         return remotePort;
     }
-
-
     public String getServerNameMB() {
         return serverNameMB;
     }
-
     public void setServerNameMB(String serverNameMB) {
         this.serverNameMB = serverNameMB;
     }
-
     public String getMethodMB() {
         return methodMB;
     }
-
     public void setMethodMB(String methodMB) {
         this.methodMB = methodMB;
     }
-
     public String getUriMB() {
         return uriMB;
     }
-
     public void setUriMB(String uriMB) {
         this.uriMB = uriMB;
     }
-
     public String getSchemeMB() {
         return schemeMB;
     }
-
     public void setSchemeMB(String schemeMB) {
         this.schemeMB = schemeMB;
     }
-
     public String getDecodedUriMB() {
         return decodedUriMB;
     }
-
     public void setDecodedUriMB(String decodedUriMB) {
         this.decodedUriMB = decodedUriMB;
     }
-
     public void setQueryMB(String queryMB) {
         this.queryMB = queryMB;
     }
-
     public String getQueryMB() {
         return queryMB;
     }
-
     public void setProtoMB(String protoMB) {
         this.protoMB = protoMB;
     }
-
     public String getProtoMB() {
         return protoMB;
     }
-
     public String getPeerAddrMB() {
         return peerAddrMB;
     }
-
     public String getRemoteAddrMB() {
         if(Objects.isNull(remoteAddrMB)){
             remoteAddrMB = socketWrapper.getRemoteAddr();
         }
         return remoteAddrMB;
     }
-
-
     public String getLocalAddrMB() {
         if(Objects.isNull(localAddrMB)){
             localAddrMB = socketWrapper.getLocalAddr();
         }
         return localAddrMB;
     }
-
-
     public String getLocalNameMB() {
         if(Objects.isNull(localNameMB)){
             localNameMB = socketWrapper.getLocalName();
@@ -176,35 +153,28 @@ public final class CoyoteRequest {
         }
         return remoteHostMB;
     }
-
     public CoyoteResponse getResponse() {
         return response;
     }
-
     public void setResponse(CoyoteResponse response) {
         this.response = response;
+        response.setRequest(this);
     }
-
     public Charset getCharset() {
         return charset;
     }
-
     public void setCharacterEncoding(String characterEncoding) {
         this.characterEncoding = characterEncoding;
     }
-
     public String getCharacterEncoding() {
         return characterEncoding;
     }
-
     public void setCharset(Charset charset) {
         this.charset = charset;
     }
-
     public void setSocketWrapper(SocketWrapperBase<?> socketWrapper) {
         this.socketWrapper = socketWrapper;
     }
-
     public int getContentLength() {
         if(contentLength > -1){
             return contentLength;
@@ -213,14 +183,12 @@ public final class CoyoteRequest {
         contentLength = Integer.parseInt(headerValue);
         return contentLength;
     }
-
     public String getContentType() {
         if(Objects.isNull(contentType)){
             contentType = getHeader(Constants.CONTENT_TYPE);
         }
         return contentType;
     }
-
     public void setStrVal(Type type, byte[] bytes, int start, int end){
         setStrVal(type, new String(bytes, start, end, StandardCharsets.US_ASCII));
     }

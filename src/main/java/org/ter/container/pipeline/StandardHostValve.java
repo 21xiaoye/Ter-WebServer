@@ -11,7 +11,6 @@ import java.util.Objects;
 public class StandardHostValve extends ValveBase {
     @Override
     public void invoke(Request request, Response response) throws IOException, ServletException {
-        System.out.println("host....");
         Context context = request.getContext();
         if(Objects.isNull(context)){
             return;

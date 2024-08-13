@@ -108,7 +108,6 @@ public class Ter {
                  NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public Engine getEngine(){

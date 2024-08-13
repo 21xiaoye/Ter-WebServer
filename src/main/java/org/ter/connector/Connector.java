@@ -227,8 +227,6 @@ public class Connector extends LifecycleBase {
         return IntrospectionUtils.setProperty(protocolHandler, name, value);
     }
 
-
-
     public Request createRequest(CoyoteRequest coyoteRequest) {
         Request request = new Request();
         request.setConnector(this);
@@ -238,7 +236,6 @@ public class Connector extends LifecycleBase {
     public Response createResponse(CoyoteResponse coyoteResponse){
         Response response = new Response();
         response.setCoyoteResponse(coyoteResponse);
-        response.setConnector(this);
         return response;
     }
 }

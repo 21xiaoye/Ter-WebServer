@@ -21,7 +21,6 @@ public class StandardPipeline extends LifecycleBase implements Pipeline {
     public Valve getBasic() {
         return basic;
     }
-
     @Override
     public void setBasic(Valve valve) {
 
