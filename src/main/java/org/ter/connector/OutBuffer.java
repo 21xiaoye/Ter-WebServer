@@ -43,7 +43,7 @@ public class OutBuffer extends Writer {
     @Override
     public void flush() throws IOException {
         if(initial){
-            coyoteResponse.sendHeader();
+            coyoteResponse.sendHeaders();
             initial = false;
         }
         if(charBuffer.remaining() > 0){
@@ -136,5 +136,21 @@ public class OutBuffer extends Writer {
     private void flushCharBuffer() throws IOException {
         realWriteChars(charBuffer.slice());
         clear(charBuffer);
+    }
+
+    public void setBufferSize(int bufferSize){
+        if(bufferSize > byteBuffer.capacity()){
+            byteBuffer = ByteBuffer.allocate(bufferSize);
+            byteBuffer.clear();
+        }
+    }
+    public int getBufferSize(){
+        return byteBuffer.capacity();
+    }
+    public void reset(){
+        clear(byteBuffer);
+        clear(charBuffer);
+
+        initial = true;
     }
 }

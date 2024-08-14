@@ -52,6 +52,7 @@ public final class CoyoteRequest {
     private TreeMap<String, String> headersMap;
     private int contentLength = -1;
     private String contentType = null;
+    private InputBuffer inputBuffer;
 
     public CoyoteRequest() {
         headersMap = new TreeMap<>();
@@ -59,6 +60,10 @@ public final class CoyoteRequest {
 
     public long getStartTime() {
         return startTime;
+    }
+
+    public void setInputBuffer(InputBuffer inputBuffer) {
+        this.inputBuffer = inputBuffer;
     }
 
     public void setStartTime(long startTime) {

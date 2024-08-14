@@ -17,6 +17,9 @@
 package org.ter.util;
 
 
+import javax.swing.plaf.PanelUI;
+import java.security.cert.CRL;
+
 /**
  * Constants.
  *
@@ -26,11 +29,11 @@ public final class Constants {
 
     public static final int DEFAULT_CONNECTION_TIMEOUT = 60000;
 
-
     /**
      * CRLF.
      */
     public static final String CRLF = "\r\n";
+    public static final byte[] _CRLF_BYTES = CRLF.getBytes();
 
 
     /**
@@ -125,8 +128,13 @@ public final class Constants {
     public static final String CLOSE = "close";
     public static final String USER_AGENT = "User-Agent";
     public static final String CONTENT_LENGTH = "Content-Length";
+    public static final String CONTENT_LANGUAGE = "Content-Language";
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String HOST = "Host";
+    public static final String TRANSFER_ENCODING = "Transfer-Encoding";
+    public static final String CHUNKED = "chunked";
+    public static final String DATE = "Date";
+    public static final byte[] ACK_BYTES = ("HTTP/1.1 100 " + CRLF + CRLF).getBytes();
     /**
      * Identity filters (input and output).
      */
@@ -166,6 +174,7 @@ public final class Constants {
      * HTTP/1.1.
      */
     public static final String HTTP_11 = "HTTP/1.1";
+    public static final byte[] _HTTP11_BYTES = HTTP_11.getBytes();
     public static final String HTTPS = "https";
     public static final String OPTIONS = "OPTIONS";
     public static final String GET = "GET";

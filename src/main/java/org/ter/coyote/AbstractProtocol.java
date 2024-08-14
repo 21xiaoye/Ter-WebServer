@@ -11,7 +11,13 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler{
      * 底层网络的I/O端点
      */
     private final AbstractEndpoint<S,?> endpoint;
+    /**
+     * 套接字连接具体处理程序，将EndPoint组件封装的Socket交给对应的协议处理器
+     */
     private Handler<S> handler;
+    /**
+     * 适配器
+     */
     protected Adapter adapter;
     public AbstractProtocol(AbstractEndpoint<S, ?> endpoint){
         this.endpoint = endpoint;

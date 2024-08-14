@@ -164,8 +164,4 @@ public class Http11InputBuffer implements InputBuffer {
         }
         return true;
     }
-
-    public ByteBuffer getByteBuffer() {
-        return byteBuffer;
-    }
 }

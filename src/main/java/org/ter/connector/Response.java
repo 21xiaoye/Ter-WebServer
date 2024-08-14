@@ -1,6 +1,7 @@
 package org.ter.connector;
 
 import org.ter.coyote.CoyoteResponse;
+import org.ter.coyote.OutputBuffer;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -8,7 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -22,7 +25,6 @@ public class Response implements HttpServletResponse {
         outBuffer = new OutBuffer();
         printWriter = new PrintWriter(outBuffer);
     }
-
     public CoyoteResponse getCoyoteResponse() {
         return coyoteResponse;
     }
@@ -39,13 +41,10 @@ public class Response implements HttpServletResponse {
         this.coyoteResponse = coyoteResponse;
         outBuffer.setCoyoteResponse(coyoteResponse);
     }
-
-
     @Override
     public void addCookie(Cookie cookie) {
 
     }
-
     @Override
     public boolean containsHeader(String name) {
         return coyoteResponse.getHeadersMap().containsKey(name);
@@ -96,7 +95,12 @@ public class Response implements HttpServletResponse {
 
     @Override
     public void addDateHeader(String name, long value) {
-
+        if(isCommitted() || Objects.isNull(name)){
+            return;
+        }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+        String format = simpleDateFormat.format(new Date(value));
+        addHeader(name, format);
     }
 
     @Override
@@ -161,11 +165,11 @@ public class Response implements HttpServletResponse {
 
     @Override
     public String getCharacterEncoding() {
-        return null;
+        return coyoteResponse.getCharacterEncoding();
     }
     @Override
     public String getContentType() {
-        return null;
+        return coyoteResponse.getContentType();
     }
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
@@ -182,8 +186,11 @@ public class Response implements HttpServletResponse {
         return printWriter;
     }
     @Override
-    public void setCharacterEncoding(String s) {
-
+    public void setCharacterEncoding(String characterEncoding) {
+        if(isCommitted()){
+            return;
+        }
+        coyoteResponse.setCharacterEncoding(characterEncoding);
     }
     @Override
     public void setContentLength(int length) {
@@ -198,15 +205,21 @@ public class Response implements HttpServletResponse {
     }
     @Override
     public void setContentType(String contentType) {
-
+        if(isCommitted()){
+            return;
+        }
+        coyoteResponse.setContentType(contentType);
     }
     @Override
-    public void setBufferSize(int i) {
-
+    public void setBufferSize(int bufferSize) {
+        if(isCommitted()){
+            throw new IllegalStateException("Cannot change buffer size after data has been written");
+        }
+        outBuffer.setBufferSize(bufferSize);
     }
     @Override
     public int getBufferSize() {
-        return 0;
+        return outBuffer.getBufferSize();
     }
     @Override
     public void flushBuffer() throws IOException {
@@ -214,7 +227,7 @@ public class Response implements HttpServletResponse {
     }
     @Override
     public void resetBuffer() {
-
+        outBuffer.reset();
     }
     @Override
     public boolean isCommitted() {
@@ -222,15 +235,16 @@ public class Response implements HttpServletResponse {
     }
     @Override
     public void reset() {
-
+        getCoyoteResponse().reset();
+        outBuffer.reset();
     }
     @Override
     public void setLocale(Locale locale) {
-
+        coyoteResponse.setLocale(locale);
     }
     @Override
     public Locale getLocale() {
-        return null;
+        return coyoteResponse.getLocale();
     }
 
     /**
