@@ -243,6 +243,18 @@ public final class CoyoteRequest {
         }
         return value;
     }
+    public String getParameter(String name) {
+        handleQueryParams();
+        ArrayList<String> values = paramHashValues.get(name);
+        if (values != null) {
+            if (values.isEmpty()) {
+                return "";
+            }
+            return values.get(0);
+        } else {
+            return null;
+        }
+    }
     public Enumeration<String> getParameterNames() {
         if (Objects.isNull(queryMB)) {
             return Collections.enumeration(paramHashValues.keySet());
@@ -286,15 +298,13 @@ public final class CoyoteRequest {
                 String value;
 
                 if (andPos == -1) {
-                    // 没有 '&'，意味着这是最后一个参数
+                    // 没有 '&'，为最后一个参数
                     value = new String(queryBytes, equalPos + 1, len - equalPos - 1);
                     start = len;
                 } else {
                     value = new String(queryBytes, equalPos + 1, andPos - equalPos - 1);
                     start = andPos + 1;
                 }
-
-                // 将键和值放入 paramHashValues 中
                 paramHashValues.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
             } else {
                 // 如果找不到 '='，跳过该片段

@@ -215,8 +215,8 @@ public class Request implements HttpServletRequest {
         return null;
     }
     @Override
-    public String getParameter(String s) {
-        return null;
+    public String getParameter(String name) {
+        return coyoteRequest.getParameter(name);
     }
     @Override
     public Enumeration<String> getParameterNames() {
