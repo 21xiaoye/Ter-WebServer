@@ -28,15 +28,12 @@ public class Response implements HttpServletResponse {
     public CoyoteResponse getCoyoteResponse() {
         return coyoteResponse;
     }
-
     public Request getRequest() {
         return request;
     }
-
     public void setRequest(Request request) {
         this.request = request;
     }
-
     public void setCoyoteResponse(CoyoteResponse coyoteResponse) {
         this.coyoteResponse = coyoteResponse;
         outBuffer.setCoyoteResponse(coyoteResponse);
@@ -49,42 +46,34 @@ public class Response implements HttpServletResponse {
     public boolean containsHeader(String name) {
         return coyoteResponse.getHeadersMap().containsKey(name);
     }
-
     @Override
     public String encodeURL(String url) {
         return url;
     }
-
     @Override
     public String encodeRedirectURL(String url) {
         return url;
     }
-
     @Override
     public String encodeUrl(String url) {
         return encodeURL(url);
     }
-
     @Override
     public String encodeRedirectUrl(String url) {
         return encodeRedirectURL(url);
     }
-
     @Override
     public void sendError(int status, String message) throws IOException {
 
     }
-
     @Override
     public void sendError(int status) throws IOException {
         sendError(status, null);
     }
-
     @Override
     public void sendRedirect(String s) throws IOException {
 
     }
-
     @Override
     public void setDateHeader(String name, long value) {
         if(Objects.isNull(name) || isCommitted()){

@@ -10,9 +10,8 @@ import org.ter.exception.LifecycleException;
 import org.ter.lifecycle.LifecycleBase;
 import org.ter.lifecycle.LifecycleState;
 import org.ter.lifecycle.MapperListener;
-import org.ter.util.res.StringManager;
 
-import java.beans.PropertyChangeSupport;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -21,7 +20,6 @@ import java.util.Objects;
  * 一般一个服务对应一个Engine
  */
 public class StandardService extends LifecycleBase implements Service {
-    private static final StringManager sm = StringManager.getStringManager(StandardService.class);
     /**
      * 此服务的名称
      */

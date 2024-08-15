@@ -21,7 +21,6 @@ public class Request implements HttpServletRequest {
     private String sessionId;
     private InputBuffer inputBuffer = new InputBuffer();
     private final ArrayList<Locale> locales = new ArrayList<>();
-
     private int remotePort = -1;
     private String remoteAddr;
     private String remoteHost;
@@ -31,62 +30,50 @@ public class Request implements HttpServletRequest {
     private MappingData mappingData = new MappingData();
     private DispatcherType internalDispatcherType = null;
     private boolean parametersParsed = false;
-
+    private Map<String, String[]> parameterMap = new LinkedHashMap<>();
     public void setConnector(Connector connector) {
         this.connector = connector;
     }
-
     public Connector getConnector() {
         return connector;
     }
-
     public CoyoteRequest getCoyoteRequest() {
         return coyoteRequest;
     }
-
     public void setCoyoteRequest(CoyoteRequest coyoteRequest) {
         this.coyoteRequest = coyoteRequest;
         inputBuffer.setCoyoteRequest(coyoteRequest);
     }
-
     public Response getResponse() {
         return response;
     }
-
     public void setResponse(Response response) {
         this.response = response;
     }
-
     @Override
     public String getAuthType() {
         return null;
     }
-
     @Override
     public Cookie[] getCookies() {
         return new Cookie[0];
     }
-
     @Override
     public long getDateHeader(String s) {
         return 0;
     }
-
     @Override
     public String getHeader(String name) {
         return coyoteRequest.getHeader(name);
     }
-
     @Override
     public Enumeration<String> getHeaders(String s) {
         return null;
     }
-
     @Override
     public Enumeration<String> getHeaderNames() {
         return null;
     }
-
     @Override
     public int getIntHeader(String name) {
         String header = coyoteRequest.getHeader(name);
@@ -95,219 +82,180 @@ public class Request implements HttpServletRequest {
         }
         return Integer.parseInt(header);
     }
-
     @Override
     public String getMethod() {
         return coyoteRequest.getMethodMB();
     }
-
     @Override
     public String getPathInfo() {
         return null;
     }
-
     @Override
     public String getPathTranslated() {
         return null;
     }
-
     @Override
     public String getContextPath() {
         return null;
     }
-
     @Override
     public String getQueryString() {
         return coyoteRequest.getQueryMB();
     }
-
     @Override
     public String getRemoteUser() {
         return null;
     }
-
     @Override
     public boolean isUserInRole(String s) {
         return false;
     }
-
     @Override
     public Principal getUserPrincipal() {
         return null;
     }
-
     @Override
     public String getRequestedSessionId() {
         return null;
     }
-
     @Override
     public String getRequestURI() {
         return coyoteRequest.getUriMB();
     }
-
     @Override
     public StringBuffer getRequestURL() {
         return null;
     }
-
     @Override
     public String getServletPath() {
         return null;
     }
-
     @Override
     public HttpSession getSession(boolean b) {
         return null;
     }
-
     @Override
     public HttpSession getSession() {
         return null;
     }
-
     @Override
     public String changeSessionId() {
         return null;
     }
-
     @Override
     public boolean isRequestedSessionIdValid() {
         return false;
     }
-
     @Override
     public boolean isRequestedSessionIdFromCookie() {
         return false;
     }
-
     @Override
     public boolean isRequestedSessionIdFromURL() {
         return false;
     }
-
     @Override
     public boolean isRequestedSessionIdFromUrl() {
         return false;
     }
-
     @Override
     public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
         return false;
     }
-
-
     @Override
     public void login(String s, String s1) throws ServletException {
 
     }
-
     @Override
     public void logout() throws ServletException {
 
     }
-
     @Override
     public Collection<Part> getParts() throws IOException, ServletException {
         return null;
     }
-
     @Override
     public Part getPart(String s) throws IOException, ServletException {
         return null;
     }
-
     @Override
     public <T extends HttpUpgradeHandler> T upgrade(Class<T> httpUpgradeHandlerClass) throws IOException, ServletException {
         return null;
     }
-
-
     @Override
     public Object getAttribute(String s) {
         return null;
     }
-
     @Override
     public Enumeration<String> getAttributeNames() {
         return null;
     }
-
     @Override
     public String getCharacterEncoding() {
         return null;
     }
-
     @Override
     public void setCharacterEncoding(String s) throws UnsupportedEncodingException {
 
     }
-
     @Override
     public int getContentLength() {
         return coyoteRequest.getContentLength();
     }
-
     @Override
     public long getContentLengthLong() {
         return coyoteRequest.getContentLength();
     }
-
     @Override
     public String getContentType() {
         return coyoteRequest.getContentType();
     }
-
     @Override
     public ServletInputStream getInputStream() throws IOException {
         return null;
     }
-
     @Override
     public String getParameter(String s) {
         return null;
     }
-
     @Override
     public Enumeration<String> getParameterNames() {
-        return null;
+        return coyoteRequest.getParameterNames();
     }
-
     @Override
-    public String[] getParameterValues(String s) {
-        return new String[0];
+    public String[] getParameterValues(String name) {
+        return coyoteRequest.getParamHashValues(name);
     }
-
     @Override
     public Map<String, String[]> getParameterMap() {
-        return null;
+        Enumeration<String> parameterNames = getParameterNames();
+        while (parameterNames.hasMoreElements()){
+            String paramName = parameterNames.nextElement();
+            String[] parameterValues = getParameterValues(paramName);
+            parameterMap.put(paramName, parameterValues);
+        }
+        return parameterMap;
     }
-
     @Override
     public String getProtocol() {
         return coyoteRequest.getProtoMB();
     }
-
     @Override
     public String getScheme() {
         return coyoteRequest.getSchemeMB();
     }
-
     @Override
     public String getServerName() {
         return coyoteRequest.getServerNameMB();
     }
-
     @Override
     public int getServerPort() {
         return coyoteRequest.getServerPort();
     }
-
     @Override
     public BufferedReader getReader() throws IOException {
         return null;
     }
-
     @Override
     public String getRemoteAddr() {
         if(Objects.isNull(remoteAddr)){
@@ -315,7 +263,6 @@ public class Request implements HttpServletRequest {
         }
         return remoteAddr;
     }
-
     @Override
     public String getRemoteHost() {
         if(Objects.isNull(remoteHost)){
@@ -323,42 +270,34 @@ public class Request implements HttpServletRequest {
         }
         return remoteHost;
     }
-
     @Override
     public void setAttribute(String s, Object o) {
 
     }
-
     @Override
     public void removeAttribute(String s) {
 
     }
-
     @Override
     public Locale getLocale() {
         return locales.get(0);
     }
-
     @Override
     public Enumeration<Locale> getLocales() {
         return Collections.enumeration(locales);
     }
-
     @Override
     public boolean isSecure() {
         return Constants.HTTPS.equals(getScheme());
     }
-
     @Override
     public RequestDispatcher getRequestDispatcher(String s) {
         return null;
     }
-
     @Override
     public String getRealPath(String s) {
         return null;
     }
-
     @Override
     public int getRemotePort() {
         if(remotePort == -1){
@@ -366,7 +305,6 @@ public class Request implements HttpServletRequest {
         }
         return remotePort;
     }
-
     @Override
     public String getLocalName() {
         if(Objects.isNull(localName)){
@@ -374,7 +312,6 @@ public class Request implements HttpServletRequest {
         }
         return localName;
     }
-
     @Override
     public String getLocalAddr() {
         if(Objects.isNull(localAddr)){
@@ -382,7 +319,6 @@ public class Request implements HttpServletRequest {
         }
         return localAddr;
     }
-
     @Override
     public int getLocalPort() {
         if(localPort == -1){
@@ -390,32 +326,26 @@ public class Request implements HttpServletRequest {
         }
         return localPort;
     }
-
     @Override
     public ServletContext getServletContext() {
         return getContext().getServletContext();
     }
-
     @Override
     public AsyncContext startAsync() throws IllegalStateException {
         return null;
     }
-
     @Override
     public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
         return null;
     }
-
     @Override
     public boolean isAsyncStarted() {
         return false;
     }
-
     @Override
     public boolean isAsyncSupported() {
         return false;
     }
-
     @Override
     public AsyncContext getAsyncContext() {
         if(!isAsyncStarted()){
@@ -423,7 +353,6 @@ public class Request implements HttpServletRequest {
         }
         return null;
     }
-
     @Override
     public DispatcherType getDispatcherType() {
         if(Objects.isNull(internalDispatcherType)){
@@ -431,7 +360,6 @@ public class Request implements HttpServletRequest {
         }
         return internalDispatcherType;
     }
-
     public MappingData getMappingData() {
         return mappingData;
     }
@@ -443,5 +371,15 @@ public class Request implements HttpServletRequest {
     }
     public Wrapper getWrapper() {
         return mappingData.wrapper;
+    }
+    public void reset(){
+        remoteAddr = null;
+        remoteHost = null;
+        remotePort = -1;
+        localPort = -1;
+        localAddr = null;
+        localName = null;
+        inputBuffer.recycle();
+        mappingData.recycle();
     }
 }

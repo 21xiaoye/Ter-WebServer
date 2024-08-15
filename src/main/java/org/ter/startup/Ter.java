@@ -4,14 +4,12 @@ import org.ter.connector.Connector;
 import org.ter.container.*;
 import org.ter.container.core.*;
 import org.ter.exception.LifecycleException;
-import org.ter.util.res.StringManager;
 
 import javax.servlet.Servlet;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 public class Ter {
-    private static final StringManager sm = StringManager.getStringManager(Ter.class);
     protected int port = 8080;
     protected String address ="localhost";
     protected Server server;

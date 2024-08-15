@@ -26,14 +26,19 @@ public class CoyoteAdapter implements Adapter {
     public void service(CoyoteRequest coyoteRequest, CoyoteResponse coyoteResponse) throws Exception {
         Request request = connector.createRequest(coyoteRequest);
         Response response = connector.createResponse(coyoteResponse);
-        request.setResponse(response);
-        response.setRequest(request);
-        boolean postParseRequest = postParseRequest(request, coyoteRequest, response, coyoteResponse);
-        if(postParseRequest){
-            connector.getService().getContainer().getPipeline().getFirst().invoke(request, response);
+        try {
+            request.setResponse(response);
+            response.setRequest(request);
+            boolean postParseRequest = postParseRequest(request, coyoteRequest, response, coyoteResponse);
+            if (postParseRequest) {
+                connector.getService().getContainer().getPipeline().getFirst().invoke(request, response);
+            }
+            // Servlet执行完请求，进行响应返回和关闭资源等操作
+            response.finishResponse();
+        }finally {
+            response.reset();
+            request.reset();
         }
-        // Servlet执行完请求，进行响应返回和关闭资源等操作
-        response.finishResponse();
     }
 
     private boolean postParseRequest(Request request, CoyoteRequest coyoteRequest, Response response, CoyoteResponse coyoteResponse) throws IOException {

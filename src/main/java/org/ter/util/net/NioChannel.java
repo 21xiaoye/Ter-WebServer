@@ -35,7 +35,6 @@ public class NioChannel implements ByteChannel, ScatteringByteChannel, Gathering
      */
     @Override
     public int write(ByteBuffer src) throws IOException {
-        System.out.println("发送响应数据正文......");
         return socketChannel.write(src);
     }
     /**

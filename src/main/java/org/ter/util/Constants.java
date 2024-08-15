@@ -116,6 +116,14 @@ public final class Constants {
      */
     public static final String COMMA = ",";
     /**
+     * '&'
+     */
+    public static final byte AND = (byte) '&';
+    /**
+     * '='
+     */
+    public static final byte EQUAL = (byte) '=';
+    /**
      * Lower case offset.
      */
     public static final byte LC_OFFSET = A - a;

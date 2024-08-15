@@ -26,4 +26,7 @@ public class InputBuffer extends Reader {
     public void close() throws IOException {
 
     }
+    public void recycle(){
+
+    }
 }

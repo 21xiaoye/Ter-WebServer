@@ -5,8 +5,7 @@ import org.ter.util.net.wrapper.SocketWrapperBase;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 
 public final class CoyoteRequest {
     public enum Type{
@@ -50,6 +49,7 @@ public final class CoyoteRequest {
      * HTTP 请求头信息
      */
     private TreeMap<String, String> headersMap;
+    private final Map<String, ArrayList<String>> paramHashValues = new LinkedHashMap<>();
     private int contentLength = -1;
     private String contentType = null;
     private InputBuffer inputBuffer;
@@ -242,5 +242,64 @@ public final class CoyoteRequest {
             return "";
         }
         return value;
+    }
+    public Enumeration<String> getParameterNames() {
+        if (Objects.isNull(queryMB)) {
+            return Collections.enumeration(paramHashValues.keySet());
+        }
+        handleQueryParams();
+        return Collections.enumeration(paramHashValues.keySet());
+    }
+
+    public String[] getParamHashValues(String name) {
+        handleQueryParams();
+        ArrayList<String> values = paramHashValues.get(name);
+        if (values == null) {
+            return null;
+        }
+        return values.toArray(new String[0]);
+    }
+    private void handleQueryParams(){
+        byte[] queryBytes = queryMB.getBytes();
+        int len = queryBytes.length;
+        int start = 0;
+
+        while (start < len) {
+            // 找到 '=' 的位置
+            int equalPos = -1;
+            for (int i = start; i < len; i++) {
+                if (queryBytes[i] == Constants.EQUAL) {
+                    equalPos = i;
+                    break;
+                }
+            }
+            // 找到 '&' 的位置
+            int andPos = -1;
+            for (int i = start; i < len; i++) {
+                if (queryBytes[i] == Constants.AND) {
+                    andPos = i;
+                    break;
+                }
+            }
+            if (equalPos != -1) {
+                String key = new String(queryBytes, start, equalPos - start);
+                String value;
+
+                if (andPos == -1) {
+                    // 没有 '&'，意味着这是最后一个参数
+                    value = new String(queryBytes, equalPos + 1, len - equalPos - 1);
+                    start = len;
+                } else {
+                    value = new String(queryBytes, equalPos + 1, andPos - equalPos - 1);
+                    start = andPos + 1;
+                }
+
+                // 将键和值放入 paramHashValues 中
+                paramHashValues.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+            } else {
+                // 如果找不到 '='，跳过该片段
+                start = andPos != -1 ? andPos + 1 : len;
+            }
+        }
     }
 }
