@@ -46,12 +46,13 @@ public class OutBuffer extends Writer {
             coyoteResponse.sendHeaders();
             initial = false;
         }
-        if(charBuffer.remaining() > 0){
-            flushCharBuffer();
-        }
-        if(byteBuffer.remaining() > 0){
-            flushByteBuffer();
-        }
+//        if(charBuffer.remaining() > 0){
+//            flushCharBuffer();
+//        }
+//        if(byteBuffer.remaining() > 0){
+//            flushByteBuffer();
+//        }
+        closed = true;
     }
     /**
      * 关闭输出缓冲区。如果响应尚未提交，将计算响应的大小，
@@ -152,5 +153,6 @@ public class OutBuffer extends Writer {
         clear(charBuffer);
 
         initial = true;
+        closed = false;
     }
 }

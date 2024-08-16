@@ -28,4 +28,5 @@ public interface Processor {
      * @return 返回与此处理器相关的请求
      */
     CoyoteRequest getRequest();
+    void recycle();
 }

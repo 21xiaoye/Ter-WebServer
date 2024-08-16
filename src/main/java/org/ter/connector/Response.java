@@ -87,7 +87,7 @@ public class Response implements HttpServletResponse {
         if(isCommitted() || Objects.isNull(name)){
             return;
         }
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
         String format = simpleDateFormat.format(new Date(value));
         addHeader(name, format);
     }

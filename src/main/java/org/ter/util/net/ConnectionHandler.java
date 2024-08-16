@@ -42,6 +42,7 @@ public record ConnectionHandler<S>(AbstractProtocol<S> protocol) implements Hand
                     System.out.println(SocketState.SUSPENDED);
                 }
                 default -> {
+                    processor.recycle();
                     System.out.println("其它");
                 }
             }

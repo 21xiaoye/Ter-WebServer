@@ -23,7 +23,11 @@ public class Http11InputBuffer implements InputBuffer {
         this.parsingRequestLine = true;
         this.headerBufferSize = headerBufferSize;
     }
-
+    public void recycle(){
+        byteBuffer.clear();
+        socketWrapper = null;
+        request.recycle();
+    }
     /**
      * 初始化缓冲区
      *

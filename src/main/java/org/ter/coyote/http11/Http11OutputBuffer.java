@@ -1,5 +1,6 @@
 package org.ter.coyote.http11;
 
+import org.ter.connector.OutBuffer;
 import org.ter.coyote.CoyoteResponse;
 import org.ter.coyote.OutputBuffer;
 import org.ter.util.Constants;
@@ -28,6 +29,11 @@ public class Http11OutputBuffer implements OutputBuffer {
         headerBuffer = ByteBuffer.allocate(heardOutputBufferSize);
         socketOutputBuffer = new SocketOutputBuffer();
         this.responseFinished = false;
+    }
+    public void recycle(){
+        headerBuffer.clear();
+        response.recycle();
+        socketWrapper = null;
     }
     @Override
     public int doWrite(ByteBuffer buffer) throws IOException {
@@ -68,7 +74,7 @@ public class Http11OutputBuffer implements OutputBuffer {
     }
 
     /**
-     * 返回响应标头信息，标准的标头格式为 Connection: keep-alive\r\n
+     * 往缓冲区写入响应标头信息，标准的标头格式为 Connection: keep-alive\r\n
      *
      * @param name 响应头名称
      * @param value 响应头值
@@ -79,9 +85,19 @@ public class Http11OutputBuffer implements OutputBuffer {
         write(value);
         headerBuffer.put(Constants.CR).put(Constants.LF);
     }
+
+    /**
+     * 往缓冲区写入响应标头结束标识
+     */
     public void endHeaders() {
         headerBuffer.put(Constants.CR).put(Constants.LF);
     }
+
+    /**
+     * 将数据写入缓冲区,主要用户将响应的状态码写入到状态行当中
+     *
+     * @param value 响应状态码
+     */
     private void write(int value){
         String str = Integer.toString(value);
         for (int i =0; i<str.length();i++){
@@ -113,12 +129,28 @@ public class Http11OutputBuffer implements OutputBuffer {
         }
         headerBuffer.put(buffer);
     }
+
+    /**
+     * 提交响应，如果headBuffer当中有响应头数据，
+     * 则返回此次请求的响应头，响应体会在响应头之后返回
+     * {@link OutBuffer#flush()}
+     * @throws IOException
+     */
     protected void commit() throws IOException{
         response.setCommitted(true);
         if(headerBuffer.position() > 0){
             headerBuffer.flip();
             try {
-                socketWrapper.write(headerBuffer);
+                String response = "HTTP/1.1 200 OK\r\n" +
+                        "Content-Type: text/plain\r\n" +
+                        "Content-Length: 12\r\n" +
+//                        "Connection: close\r\n" +
+                        "\r\n" +
+                        "Hello Write\r\n";
+                ByteBuffer wrap = ByteBuffer.wrap(response.getBytes());
+                socketWrapper.write(wrap);
+                wrap.clear();
+//                socketWrapper.write(headerBuffer);
             }finally {
                 headerBuffer.clear();
             }

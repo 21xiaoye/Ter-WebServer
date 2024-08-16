@@ -312,4 +312,32 @@ public final class CoyoteRequest {
             }
         }
     }
+
+    public void recycle() {
+
+        contentLength = -1;
+        charset = null;
+        characterEncoding = null;
+        headersMap.clear();
+        serverNameMB = null;
+        serverPort = -1;
+        localAddrMB = null;
+        localNameMB = null;
+        localPort = -1;
+        peerAddrMB = null;
+        remoteAddrMB = null;
+        remoteHostMB = null;
+        remotePort = -1;
+
+        paramHashValues.clear();
+
+        uriMB = null;
+        decodedUriMB = null;
+        queryMB = null;
+        methodMB = null;
+        protoMB = null;
+
+        schemeMB = null;
+        startTime = -1;
+    }
 }

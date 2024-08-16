@@ -9,10 +9,7 @@ import org.ter.util.net.wrapper.SocketWrapperBase;
 
 import java.text.SimpleDateFormat;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Http1.1协议处理器
@@ -129,12 +126,12 @@ public class Http11Processor extends AbstractProcessor {
         if(Constants.EMPTY.equals(response.getFieldValue(Constants.DATE))){
             long now = System.currentTimeMillis();
             Date date = new Date(now);
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
             String format = simpleDateFormat.format(date);
             response.addHeader(Constants.DATE, format);
         }
         response.addHeader("Server", "localhost");
-        response.addHeader(Constants.CONNECTION, Constants.KEEP_ALIVE_HEADER_VALUE_TOKEN);
+        response.addHeader(Constants.CONNECTION, Constants.CLOSE);
 
         outputBuffer.sendStatusLine();
 
@@ -146,5 +143,11 @@ public class Http11Processor extends AbstractProcessor {
         }
         outputBuffer.endHeaders();
         outputBuffer.commit();
+    }
+    @Override
+    public void recycle(){
+        outputBuffer.recycle();
+        inputBuffer.recycle();
+        socketWrapper = null;
     }
 }
