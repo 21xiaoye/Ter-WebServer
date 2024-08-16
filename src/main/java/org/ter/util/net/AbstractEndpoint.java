@@ -187,6 +187,11 @@ public abstract class AbstractEndpoint <S,U>{
      */
     protected void closeSocket(U socket){
         // 关闭套接字
+        SocketWrapperBase<S> socketWrapper = connections.get(socket);
+        if (socketWrapper != null) {
+            socketWrapper.close();
+            System.out.println("关闭套接字");
+        }
     }
 
     /**

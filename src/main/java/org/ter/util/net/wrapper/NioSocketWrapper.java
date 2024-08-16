@@ -7,6 +7,7 @@ import org.ter.util.net.Poller;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Objects;
 
@@ -102,5 +103,9 @@ public class NioSocketWrapper extends SocketWrapperBase<NioChannel> {
                 remoteAddr = localAddress.getHostAddress();
             }
         }
+    }
+    @Override
+    public void registerReadInterest() throws InterruptedException {
+        getPoller().add(this, SelectionKey.OP_READ);
     }
 }

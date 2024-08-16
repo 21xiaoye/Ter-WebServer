@@ -9,15 +9,13 @@ public abstract class AbstractProcessorLight implements Processor{
     @Override
     public SocketState process(SocketWrapperBase<?> socketWrapper, SocketEvent socketEvent) throws IOException {
         SocketState state = SocketState.CLOSED;
-        do{
-            if(SocketEvent.OPEN_READ.equals(socketEvent)){
-                state = service(socketWrapper);
-            }else if(SocketEvent.OPEN_WRITE.equals(socketEvent)){
-                state = SocketState.LONG;
-            }else{
-                state = SocketState.CLOSED;
-            }
-        }while (SocketState.CLOSED.equals(state));
+        if(SocketEvent.OPEN_READ.equals(socketEvent)){
+            state = service(socketWrapper);
+        }else if(SocketEvent.OPEN_WRITE.equals(socketEvent)){
+            state = SocketState.LONG;
+        }else{
+            state = SocketState.CLOSED;
+        }
         return state;
     }
 

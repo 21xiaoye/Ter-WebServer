@@ -97,7 +97,15 @@ public abstract class SocketWrapperBase <E>{
      * 填充远程连接的端口
      */
     public abstract void populateRemoteAddr();
-
+    /**
+     * 完成socket的请求之后，将其再次注册为OPEN_READ,等待客户端的下一次请求；
+     * HTTP1.1默认长连接Connection: keep-alive,就不会在完成一次请求之后关闭socket，
+     * 而是等待下一次客户端请求；
+     * 这个方法就是完成客户端请求之后，将其再次注册为OPEN_READ，如果用户在一定时间内再次发送请求，
+     * 则读取这次请求的数据。
+     * @throws InterruptedException
+     */
+    public abstract void registerReadInterest() throws InterruptedException;
     public int getLocalPort() {
         if(localPort ==  -1){
             populateLocalPort();

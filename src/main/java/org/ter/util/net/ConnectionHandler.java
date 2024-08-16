@@ -5,6 +5,9 @@ import org.ter.coyote.Processor;
 import org.ter.coyote.SocketState;
 import org.ter.util.net.wrapper.SocketWrapperBase;
 
+import javax.servlet.http.HttpUpgradeHandler;
+import javax.servlet.http.WebConnection;
+import java.nio.ByteBuffer;
 import java.util.Objects;
 
 /**
@@ -30,7 +33,7 @@ public record ConnectionHandler<S>(AbstractProtocol<S> protocol) implements Hand
                     System.out.println(SocketState.LONG);
                 }
                 case OPEN -> {
-                    System.out.println(SocketState.OPEN);
+                    socketWrapper.registerReadInterest();
                 }
                 case SENDFILE -> {
                     System.out.println(SocketState.SENDFILE);

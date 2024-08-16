@@ -56,7 +56,10 @@ public class Http11Processor extends AbstractProcessor {
                 response.setStatus(400);
             }
         }
-        return SocketState.CLOSED;
+        if(endpoint.isPaused()){
+            return SocketState.CLOSED;
+        }
+        return SocketState.OPEN;
     }
 
     /**

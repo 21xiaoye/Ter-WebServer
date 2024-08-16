@@ -4,6 +4,7 @@ import org.ter.util.net.wrapper.NioSocketWrapper;
 import org.ter.util.net.wrapper.SocketWrapperBase;
 
 import java.io.IOException;
+import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -102,13 +103,51 @@ public class Poller implements Runnable{
         }
     }
 
+    /**
+     * 将事件放入事件队列当中，等待轮询器进行处理；
+     * 当有socket连接时，{@link Acceptor}接收器会接收这个连接，
+     * 然后将其放入事件队列当中，等待{@link Poller}轮询器进行处理。
+     *
+     * @param pollerEvent 轮询事件
+     * @throws InterruptedException
+     */
     public void addEvent(PollerEvent pollerEvent) throws InterruptedException {
         events.put(pollerEvent);
         selector.wakeup();
     }
+
+    /**
+     * 客户端第一次发送请求之后，将其再次放入事件队列当中，等待客户端再一次发送请求
+     *
+     * @param socketWrapper socket包装器
+     * @param interestOps socket在选择器上的注册键操作位
+     * @throws InterruptedException
+     */
+    public void add(NioSocketWrapper socketWrapper, int interestOps) throws InterruptedException {
+        PollerEvent pollerEvent = createPollerEvent(socketWrapper, interestOps);
+        addEvent(pollerEvent);
+        if (close) {
+            endpoint.processSocket(socketWrapper, SocketEvent.STOP, false);
+        }
+    }
+
+    /**
+     * 创建轮询事件
+     *
+     * @param socketWrapper socket包装器
+     * @param interestOps socket在选择器上的注册键操作位
+     * @return 轮询事件
+     */
     private PollerEvent createPollerEvent(NioSocketWrapper socketWrapper, int interestOps) {
         return new PollerEvent(socketWrapper, interestOps);
     }
+
+    /**
+     * 向轮询器注册新创建的套接字
+     *
+     * @param socketWrapper socket包装器
+     * @throws InterruptedException
+     */
     public void register(final NioSocketWrapper socketWrapper) throws InterruptedException {
         socketWrapper.interestOps(SelectionKey.OP_READ);
         addEvent(createPollerEvent(socketWrapper, OP_REGISTER));
@@ -135,6 +174,26 @@ public class Poller implements Runnable{
                     socketChannel.register(getSelector(), SelectionKey.OP_READ, socketWrapper);
                 } catch (Exception exception) {
                     // 记录日志
+                }
+            }else{
+                System.out.println("这个连接之前已经进行注册了......");
+                final SelectionKey key = socketChannel.keyFor(getSelector());
+                if (key == null) {
+                    socketWrapper.close();
+                } else {
+                    final NioSocketWrapper attachment = (NioSocketWrapper) key.attachment();
+                    if (attachment != null) {
+                        // We are registering the key to start with, reset the fairness counter.
+                        try {
+                            int ops = key.interestOps() | interestOps;
+                            attachment.interestOps(ops);
+                            key.interestOps(ops);
+                        } catch (CancelledKeyException ckx) {
+                            endpoint.cancelledKey(key, socketWrapper);
+                        }
+                    } else {
+                        endpoint.cancelledKey(key, socketWrapper);
+                    }
                 }
             }
         }
