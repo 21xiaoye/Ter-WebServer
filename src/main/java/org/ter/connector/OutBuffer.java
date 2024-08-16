@@ -46,12 +46,12 @@ public class OutBuffer extends Writer {
             coyoteResponse.sendHeaders();
             initial = false;
         }
-//        if(charBuffer.remaining() > 0){
-//            flushCharBuffer();
-//        }
-//        if(byteBuffer.remaining() > 0){
-//            flushByteBuffer();
-//        }
+        if(charBuffer.remaining() > 0){
+            flushCharBuffer();
+        }
+        if(byteBuffer.remaining() > 0){
+            flushByteBuffer();
+        }
         closed = true;
     }
     /**

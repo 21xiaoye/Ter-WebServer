@@ -141,16 +141,7 @@ public class Http11OutputBuffer implements OutputBuffer {
         if(headerBuffer.position() > 0){
             headerBuffer.flip();
             try {
-                String response = "HTTP/1.1 200 OK\r\n" +
-                        "Content-Type: text/plain\r\n" +
-                        "Content-Length: 12\r\n" +
-//                        "Connection: close\r\n" +
-                        "\r\n" +
-                        "Hello Write\r\n";
-                ByteBuffer wrap = ByteBuffer.wrap(response.getBytes());
-                socketWrapper.write(wrap);
-                wrap.clear();
-//                socketWrapper.write(headerBuffer);
+                socketWrapper.write(headerBuffer);
             }finally {
                 headerBuffer.clear();
             }
