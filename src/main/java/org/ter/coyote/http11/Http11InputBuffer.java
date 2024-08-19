@@ -7,6 +7,7 @@ import org.ter.util.buf.CharsetFunctions;
 import org.ter.util.net.wrapper.SocketWrapperBase;
 
 import java.io.IOException;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
@@ -83,7 +84,7 @@ public class Http11InputBuffer implements InputBuffer {
      */
     private boolean skipStartCRLF() throws IOException {
         do {
-            if (!read()) {
+            if (read() < 0) {
                 return false;
             }
             if (request.getStartTime() < 0) {
@@ -131,8 +132,7 @@ public class Http11InputBuffer implements InputBuffer {
         }
         return null;
     }
-    @Override
-    public boolean read() throws IOException {
+    private int read() throws IOException {
         int nRead;
         int mark = byteBuffer.position();
         try {
@@ -144,7 +144,23 @@ public class Http11InputBuffer implements InputBuffer {
                 byteBuffer.limit(0).position(0);
             }
         }
-        return nRead > 0;
+        return nRead;
+    }
+    @Override
+    public int read(ByteBuffer byteBuffer) throws IOException {
+        byteBuffer.clear();
+        if (!this.byteBuffer.hasRemaining()) {
+            read();
+        }
+        int length = this.byteBuffer.remaining();
+        if (byteBuffer.remaining() < length) {
+            throw new BufferOverflowException();
+        }
+        while (this.byteBuffer.hasRemaining()){
+            byteBuffer.put(this.byteBuffer.get());
+        }
+        byteBuffer.flip();
+        return length;
     }
 
     /**

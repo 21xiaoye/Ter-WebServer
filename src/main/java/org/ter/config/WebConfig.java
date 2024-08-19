@@ -7,6 +7,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "org.ter")
+@ComponentScan(basePackages = "org.ter.controller")
 public class WebConfig {
 }

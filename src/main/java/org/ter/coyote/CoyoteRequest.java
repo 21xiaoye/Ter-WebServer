@@ -3,6 +3,8 @@ package org.ter.coyote;
 import org.ter.util.Constants;
 import org.ter.util.net.wrapper.SocketWrapperBase;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -311,6 +313,9 @@ public final class CoyoteRequest {
                 start = andPos != -1 ? andPos + 1 : len;
             }
         }
+    }
+    public int doRead(ByteBuffer byteBuffer) throws IOException {
+        return inputBuffer.read(byteBuffer);
     }
 
     public void recycle() {

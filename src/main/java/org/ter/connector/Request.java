@@ -28,9 +28,14 @@ public class Request implements HttpServletRequest {
     private String localName;
     private String localAddr;
     private MappingData mappingData = new MappingData();
-    private DispatcherType internalDispatcherType = null;
+    private DispatcherType internalDispatcherType;
     private boolean parametersParsed = false;
+    /**
+     * 保存路径参数，key：参数名称，value；参数值
+     */
     private Map<String, String[]> parameterMap = new LinkedHashMap<>();
+    private ServletInputStream servletInputStream;
+
     public void setConnector(Connector connector) {
         this.connector = connector;
     }
@@ -88,7 +93,7 @@ public class Request implements HttpServletRequest {
     }
     @Override
     public String getPathInfo() {
-        return null;
+        return mappingData.requestPath;
     }
     @Override
     public String getPathTranslated() {
@@ -212,7 +217,10 @@ public class Request implements HttpServletRequest {
     }
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        return null;
+        if(Objects.isNull(servletInputStream)){
+            servletInputStream = new InputStream(inputBuffer);
+        }
+        return servletInputStream;
     }
     @Override
     public String getParameter(String name) {

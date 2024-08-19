@@ -2,10 +2,12 @@ package org.ter.controller;
 
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Enumeration;
 
 public class HelloServlet extends HttpServlet {
@@ -17,6 +19,11 @@ public class HelloServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int contentLength = req.getContentLength();
+        ServletInputStream inputStream = req.getInputStream();
+        byte[] buffer = new byte[contentLength];
+        inputStream.read(buffer, 0, contentLength);
+        System.out.println(new String(buffer));
         Enumeration<String> parameterNames = req.getParameterNames();
         while (parameterNames.hasMoreElements()){
             String parameterName = parameterNames.nextElement();

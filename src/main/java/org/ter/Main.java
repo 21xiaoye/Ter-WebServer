@@ -4,6 +4,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.servlet.DispatcherServlet;
 import org.ter.config.WebConfig;
 import org.ter.container.Context;
+
 import org.ter.controller.HelloServlet;
 import org.ter.exception.LifecycleException;
 import org.ter.startup.Ter;

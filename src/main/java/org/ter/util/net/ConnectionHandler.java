@@ -28,6 +28,7 @@ public record ConnectionHandler<S>(AbstractProtocol<S> protocol) implements Hand
         }
         try {
             SocketState state = processor.process(socketWrapper, status);
+            processor.recycle();
             switch (state){
                 case LONG -> {
                     System.out.println(SocketState.LONG);
@@ -45,7 +46,6 @@ public record ConnectionHandler<S>(AbstractProtocol<S> protocol) implements Hand
                     System.out.println(SocketState.SUSPENDED);
                 }
                 default -> {
-                    processor.recycle();
                     System.out.println("其它");
                 }
             }
