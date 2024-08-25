@@ -29,7 +29,7 @@ public class Request implements HttpServletRequest {
     private String localAddr;
     private MappingData mappingData = new MappingData();
     private DispatcherType internalDispatcherType;
-    private boolean parametersParsed = false;
+    private BufferedReader bufferedReader;
     /**
      * 保存路径参数，key：参数名称，value；参数值
      */
@@ -262,7 +262,10 @@ public class Request implements HttpServletRequest {
     }
     @Override
     public BufferedReader getReader() throws IOException {
-        return null;
+        if(Objects.isNull(bufferedReader)){
+            bufferedReader = new BufferedReader(inputBuffer);
+        }
+        return  bufferedReader;
     }
     @Override
     public String getRemoteAddr() {

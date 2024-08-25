@@ -6,8 +6,8 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Enumeration;
 
 public class HelloServlet extends HttpServlet {
@@ -32,5 +32,10 @@ public class HelloServlet extends HttpServlet {
         }
         resp.setContentType("text/html");
         resp.getWriter().println("<h1>Hello, World!--->Post</h1>");
+    }
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html");
+        resp.getWriter().println("<h1>Hello, World!--->Put</h1>");
     }
 }

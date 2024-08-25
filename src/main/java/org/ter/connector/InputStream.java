@@ -18,17 +18,14 @@ public class InputStream extends ServletInputStream {
     public boolean isReady() {
         return false;
     }
-
     @Override
     public void setReadListener(ReadListener readListener) {
 
     }
-
     @Override
     public int read() throws IOException {
         return inputBuffer.read();
     }
-
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
         return inputBuffer.read(b, off, len);
