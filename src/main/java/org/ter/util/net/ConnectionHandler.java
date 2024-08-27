@@ -19,15 +19,14 @@ public record ConnectionHandler<S>(AbstractProtocol<S> protocol) implements Hand
         if (Objects.isNull(socketWrapper) || SocketEvent.DISCONNECT.equals(status) || SocketEvent.ERROR.equals(status)) {
             return SocketState.CLOSED;
         }
-        S socket = socketWrapper.getSocket();
         Processor processor = (Processor) socketWrapper.takeCurrentProcessor();
         if (Objects.nonNull(processor)) {
-
         } else {
             processor = protocol().createProcessor();
         }
+        SocketState state = SocketState.CLOSED;
         try {
-            SocketState state = processor.process(socketWrapper, status);
+            state = processor.process(socketWrapper, status);
             processor.recycle();
             switch (state){
                 case LONG -> {
@@ -52,6 +51,15 @@ public record ConnectionHandler<S>(AbstractProtocol<S> protocol) implements Hand
         }catch (Exception exception){
             // 记录日志
         }
-        return null;
+        if(Objects.nonNull(processor)){
+            socketWrapper.setCurrentProcessor(processor);
+        }
+        return state;
+    }
+
+    @Override
+    public void release(SocketWrapperBase<S> socketWrapper) {
+        Processor processor = (Processor)socketWrapper.takeCurrentProcessor();
+        processor.recycle();
     }
 }

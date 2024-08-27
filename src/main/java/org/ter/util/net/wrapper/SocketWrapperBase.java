@@ -49,6 +49,9 @@ public abstract class SocketWrapperBase <E>{
     public Object takeCurrentProcessor(){
         return currentProcessor.getAndSet(null);
     }
+    public void setCurrentProcessor(Object currentProcessor) {
+        this.currentProcessor.set(currentProcessor);
+    }
 
     public SocketBufferHandler getSocketBufferHandler() {
         return socketBufferHandler;
@@ -59,6 +62,7 @@ public abstract class SocketWrapperBase <E>{
     }
 
     public void close() {
+        endpoint.getHandler().release(this);
     }
 
     /**

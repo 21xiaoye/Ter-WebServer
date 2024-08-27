@@ -21,7 +21,6 @@ public class Poller implements Runnable{
     private volatile boolean close = false;
     public static final int OP_REGISTER = 0x100;
     private final NioEndpoint endpoint;
-
     private long selectorTimeout = 1000;
     private final BlockingQueue<PollerEvent> events =
             new LinkedBlockingDeque<>();
@@ -29,15 +28,12 @@ public class Poller implements Runnable{
         this.endpoint = endpoint;
         this.selector = Selector.open();
     }
-
-
     public Selector getSelector() {
         return selector;
     }
     public NioEndpoint getEndpoint() {
         return endpoint;
     }
-
     @Override
     public void run() {
         while (true){
@@ -71,7 +67,6 @@ public class Poller implements Runnable{
                     }
                 }
             }
-
         }
     }
 
@@ -168,7 +163,9 @@ public class Poller implements Runnable{
             int interestOps = pollerEvent.getInterestOps();
             if(Objects.isNull(socketChannel)){
                 // 关闭连接
+                socketWrapper.close();
             }
+            // 客户端第一次发送请求
             if(OP_REGISTER == interestOps){
                 try {
                     socketChannel.register(getSelector(), SelectionKey.OP_READ, socketWrapper);
@@ -176,14 +173,13 @@ public class Poller implements Runnable{
                     // 记录日志
                 }
             }else{
-                System.out.println("这个连接之前已经进行注册了......");
+                // 客户端再一次发送请求，HTTP1.1默认长连接
                 final SelectionKey key = socketChannel.keyFor(getSelector());
                 if (key == null) {
                     socketWrapper.close();
                 } else {
                     final NioSocketWrapper attachment = (NioSocketWrapper) key.attachment();
                     if (attachment != null) {
-                        // We are registering the key to start with, reset the fairness counter.
                         try {
                             int ops = key.interestOps() | interestOps;
                             attachment.interestOps(ops);
@@ -213,7 +209,6 @@ public class Poller implements Runnable{
         sk.interestOps(intops);
         socketWrapper.interestOps(intops);
     }
-
 
     /**
      * 轮询事件

@@ -16,4 +16,5 @@ public interface Handler<S> {
      */
     SocketState process(SocketWrapperBase<S> socketWrapper,
                         SocketEvent status);
+    void release(SocketWrapperBase<S> socketWrapper);
 }
